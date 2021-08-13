@@ -23,6 +23,15 @@ def add_operation(before: list = [], after: list = []):
 
 
 def update_func(origin, before: list = [], after: list = []):
+    """
+    Add some processing before and after the execution of the original function. Returns a new function.
+
+    This function contains the following parameters
+
+    origin:     The original function
+    before:     A list of functions. These functions will be executed !!before!! the original function
+    after:      A list of functions. These functions will be executed !!after!! the original function
+    """
 
     origin = deepcopy(origin)
 
