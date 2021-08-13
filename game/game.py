@@ -27,10 +27,11 @@ class Cat:
 
 
 class Map:
-    def __init__(self, tilemap_id, speed):
-        self.pos = Vec2(0, -MAP_H + WINDOW_H)
-        self.tilpmap = tilemap_id
-        self.speed = speed
+    def __init__(self, tilemap_id, default_y):
+        self.pos = Vec2(0, default_y)
+        self.tilemap = tilemap_id
+        self.speed = 32
+        self.default_y = default_y
 
     def update(self, x, y):
         self.pos.x = x
@@ -45,13 +46,10 @@ class App:
         pyxel.init(WINDOW_W, WINDOW_H, caption="Cat Game")
         pyxel.load("assets.pyxres")
 
-        # pyxel.mouse(False)
-
         # make instance
         self.player = Cat(self.PLAYER_IMG_ID, CAT_W)
-        self.map = Map(self.TILEMAP_ID, 8)
-
-        # self.mouse_count = 0
+        self.maps = [Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
+                     Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)]
 
         pyxel.run(self.update, self.draw)
 
@@ -73,19 +71,22 @@ class App:
 
         # ====== crtl Map ======
         if pyxel.frame_count % 5 == 0:
-            self.map.update(self.map.pos.x, self.map.pos.y + self.map.speed)
+            for map in self.maps:
+                if map.pos.y < WINDOW_H:
+                    map.update(map.pos.x, map.pos.y + map.speed)
+                else:
+                    map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
     def draw(self):
         pyxel.cls(0)
 
-        map_roop = 0
+        # ====== draw Map ======
 
-        # ====== draw Cat ======
-        for i in range(2):
-            pyxel.bltm(self.map.pos.x, self.map.pos.y,
-                       self.map.tilpmap, i * (-MAP_H), 0, MAP_W, MAP_H, 13)
+        for map in self.maps:
+            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap,
+                       0, 0, MAP_W, MAP_H, 13)
 
-        # ====== draw Cat ======
+            # ====== draw Cat ======
         pyxel.blt(self.player.pos.x, self.player.pos.y,
                   self.player.img_cat, 0, 0, CAT_W, CAT_H, 13)
 
