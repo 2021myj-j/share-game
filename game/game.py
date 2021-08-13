@@ -16,7 +16,7 @@ class Vec2:
 
 class Cat:
     def __init__(self, img_id, speed):
-        self.pos = Vec2(48, 177)
+        self.pos = Vec2(48, 176)
         self.vec = 0
         self.img_cat = img_id
         self.speed = speed
@@ -49,7 +49,7 @@ class App:
 
         # make instance
         self.player = Cat(self.PLAYER_IMG_ID, CAT_W)
-        self.map = Map(self.TILEMAP_ID, 0.1)
+        self.map = Map(self.TILEMAP_ID, 8)
 
         # self.mouse_count = 0
 
@@ -72,14 +72,18 @@ class App:
                 self.player.update(WINDOW_W - CAT_W, self.player.pos.y)
 
         # ====== crtl Map ======
-        self.map.update(self.map.pos.x, self.map.pos.y + self.map.speed)
+        if pyxel.frame_count % 5 == 0:
+            self.map.update(self.map.pos.x, self.map.pos.y + self.map.speed)
 
     def draw(self):
         pyxel.cls(0)
 
+        map_roop = 0
+
         # ====== draw Cat ======
-        pyxel.bltm(self.map.pos.x, self.map.pos.y,
-                   self.map.tilpmap, 0, 0, MAP_W, MAP_H, 13)
+        for i in range(2):
+            pyxel.bltm(self.map.pos.x, self.map.pos.y,
+                       self.map.tilpmap, i * (-MAP_H), 0, MAP_W, MAP_H, 13)
 
         # ====== draw Cat ======
         pyxel.blt(self.player.pos.x, self.player.pos.y,
