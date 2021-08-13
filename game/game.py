@@ -90,4 +90,5 @@ class App:
                   self.player.img_cat, 0, 0, CAT_W, CAT_H, 13)
 
 
-App()
+if __name__ == "__main__":
+    App()
