@@ -1,5 +1,6 @@
 
 
+
 from random import randint, random
 import pyxel
 from game.obstacle import ObstacleList
@@ -370,7 +371,7 @@ class App:
         self.game_over_flag == 1
         self.playing_flag == 0
 
-        
+
 if __name__ == "__main__":
 
     App(debug_mode=True)
