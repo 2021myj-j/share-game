@@ -67,8 +67,10 @@ class App:
 
         # make instance
         self.player = Cat(self.PLAYER_IMG_ID, mario_W)
-        self.maps = [Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
-                     Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)]
+        self.maps = [
+            Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
+            Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
+        ]
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
 
@@ -90,8 +92,7 @@ class App:
                 self.player.update(0, self.player.pos.y)
         elif pyxel.btnp(pyxel.KEY_D):
             self.player.vec = 0
-            self.player.update(self.player.pos.x +
-                               self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
             if self.player.pos.x + mario_W > WINDOW_W:
                 self.player.update(WINDOW_W - mario_W, self.player.pos.y)
 
@@ -118,8 +119,7 @@ class App:
 
         # ====== draw Map ======
         for map in self.maps:
-            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap,
-                       0, 0, MAP_W, MAP_H, 13)
+            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
         # ====== draw Cat ======
             if self.player.vec == 1:
