@@ -2,8 +2,6 @@ import time
 import requests
 import json
 
-#事前に取得したYouTube API key
-YT_API_KEY = 'AIzaSyBHPN6wjEFpq_UjEB-BJEH6C6bMlRCEUQ8'
 
 
 
