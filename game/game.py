@@ -91,13 +91,15 @@ class App:
         elif pyxel.btnp(pyxel.KEY_D):
             self.player.vec = 0
 
-        else :
+        else:
             if self.player.vec == 1:
-                pyxel.blt(self.player.pos.x, self.player.pos.y,
-                  self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
+                pyxel.blt(
+                    self.player.pos.x, self.player.pos.y,
+                    self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
             else:
-                pyxel.blt(self.player.pos.x, self.player.pos.y,
-                  self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+                pyxel.blt(
+                    self.player.pos.x, self.player.pos.y,
+                    self.player.img_mario, 0, 24, mario_W, mario_H, 0)
 
 
 if __name__ == "__main__":
