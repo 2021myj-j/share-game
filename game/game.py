@@ -1,5 +1,5 @@
 import pyxel
-from obstacle import ObstacleList
+from game.obstacle import ObstacleList
 
 WINDOW_H = 208
 WINDOW_W = 112
