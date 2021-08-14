@@ -36,7 +36,12 @@ class YoutubeLiveChat():
         }
         data = requests.get(url, params=params).json()
 
-        liveStreamingDetails = data['items'][0]['liveStreamingDetails']
+        try:
+            liveStreamingDetails = data['items'][0]['liveStreamingDetails']
+        except BaseException:
+            print('NO live')
+            return None
+
         if 'activeLiveChatId' in liveStreamingDetails.keys():
             chat_id = liveStreamingDetails['activeLiveChatId']
             print('get_chat_id done!')
@@ -86,7 +91,7 @@ class YoutubeLiveChat():
                 comments.append(comment)
 
         except BaseException:
-            pass
+            return None
 
         res = {"next_page_token": data['nextPageToken'], "comments": comments}
 
