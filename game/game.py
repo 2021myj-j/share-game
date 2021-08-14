@@ -115,13 +115,13 @@ class App:
         else:
             self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
-        Enemy_kuri(self.PLAYER_IMG_ID, 0.2, randint(0, 50), randint(-150, -50)),
-        Enemy_kuri(self.PLAYER_IMG_ID, 0.3, randint(30, 80), randint(-350, -100)),
-        Enemy_kuri(self.PLAYER_IMG_ID, 0.4, randint(60, WINDOW_W), randint(-600, -300)),
-        Enemy_kuri(self.PLAYER_IMG_ID, 0.5, randint(50, 100), randint(-700, -500))
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.8, randint(0, 70), randint(-150, -50)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.9, randint(10, 80), randint(-350, -100)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 1, randint(20, 90), randint(-600, -300)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 1.1, randint(30, 100), randint(-700, -500))
         ]
 
-        self.enemy2 = Enemy_koura(self.PLAYER_IMG_ID, 2, 10, 50)
+        self.enemy2 = Enemy_koura(self.PLAYER_IMG_ID, 1.2, randint(0, 100), randint(-1000, -500))
         self.maps = [
         Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
         Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
@@ -218,7 +218,7 @@ class App:
             for enemy in self.Enemies:
                 enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
                 if enemy.pos.y >= WINDOW_H - ENEMY_H:
-                    enemy.pos.y = enemy.default_y - 256
+                    enemy.pos.y = enemy.default_y - randint(100, 300)
 
             self.enemy2.update(
                 self.enemy2.pos.x + self.enemy2.x_speed,
@@ -229,7 +229,7 @@ class App:
                 self.enemy2.x_speed = -self.enemy2.x_speed
 
             if self.enemy2.pos.y >= WINDOW_H:
-                self.enemy2.pos.y = self.enemy2.default_y - 200
+                self.enemy2.pos.y = self.enemy2.default_y - randint(200, 500)
 
             # ====== Enemy Collision ======
             enemy_count = len(self.Enemies)
@@ -367,6 +367,8 @@ class App:
     def game_over(self):
         pyxel.cls(0)
         pyxel.text(37, 100, "GAME OVER", 8)
+        self.playing_flag == 0
+        self.game_over_flag == 1
 
 
 if __name__ == "__main__":
