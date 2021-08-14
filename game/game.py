@@ -1,4 +1,5 @@
 
+
 from random import randint
 import pyxel
 from game.obstacle import ObstacleList
@@ -31,6 +32,8 @@ class Player:
         self.a_pressed = False
         self.d_pressed = False
         self.y_pressed = False
+        self.is_invincible = False
+        self.inv_start_frame = 0
 
     def update(self, x, y):
         """
@@ -228,11 +231,10 @@ class App:
             if self.enemy2.pos.y >= WINDOW_H:
                 self.enemy2.pos.y = self.enemy2.default_y - 200
 
-            # ====== Enemy Collision======
-
+            # ====== Enemy Collision ======
             enemy_count = len(self.Enemies)
             for i in range(enemy_count):
-            # 当たり判定(クリボーとマリオ)
+                # 当たり判定(クリボーとマリオ)
                 if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
                     and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
                     and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
@@ -250,9 +252,7 @@ class App:
                     and (self.player.pos.y < self.Enemies[i].pos.y)
                     and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
 
-                    print("衝突しました")
-
-                
+                    self.damage()
 
             # 当たり判定(こうらとマリオ)
             if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
@@ -272,7 +272,7 @@ class App:
                 and (self.player.pos.y < self.enemy2.pos.y)
                 and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
 
-                print("こうら衝突しました")
+                    self.damage()
 
 
             # ====== crtl Map ======
@@ -289,16 +289,20 @@ class App:
                             INGAME_COUNT) % len(self.obstacle_lists)
 
                 for i, collision in enumerate(self.collisions):
-                    collision.update(
-                        self.obstacle_lists[index - i])
+                    collision.update(self.obstacle_lists[index - i])
                     for i, obstacle in enumerate(collision.obstacle_list):
                         if obstacle:
                             if (i - 1) * 8 <= self.player.pos.x <= i * 8:
-                                self.player.life -= 1
-    
-    
+                                self.damage()
 
-  
+    def damage(self):
+        if not self.player.is_invincible:
+            self.player.is_invincible = True
+            self.player.inv_start_frame = pyxel.frame_count
+            self.player.life -= 1
+        else:
+            if pyxel.frame_count - self.player.inv_start_frame > 60:
+                self.player.is_invincible = False
 
     def draw(self):
         pyxel.cls(0)
@@ -340,6 +344,10 @@ class App:
                 ENEMY_H, 7
             )
 
+            pyxel.rect(8, 8, 60, 16, 0)
+
+            pyxel.text(13, 14, "LIFE: " + str(self.player.life), 7)
+
             if self.player.life < 1:
                 self.game_over()
 
@@ -347,7 +355,6 @@ class App:
             pyxel.cls(0)
             pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
             pyxel.text(35, 80, "Game Start", 8)
-            
             
             if 0 < pyxel.frame_count - self.start_count < 90:
                 if 0 < pyxel.frame_count - self.start_count < 30:
@@ -357,20 +364,11 @@ class App:
                 if 60 < pyxel.frame_count - self.start_count < 90:
                     pyxel.text(55, 120, "1", 8)
 
-
-
-
     def game_over(self):
         pyxel.cls(0)
         pyxel.text(37, 100, "GAME OVER", 8)
 
 
-
-    
-
-        
-
 if __name__ == "__main__":
 
     App(debug_mode=True)
-
