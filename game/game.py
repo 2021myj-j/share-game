@@ -21,6 +21,7 @@ class Vec2:
 
 class Player:
     def __init__(self, img_id, speed, life=3):
+
         self.pos = Vec2(48, 176)
         self.vec = 0
         self.img_mario = img_id
@@ -101,7 +102,8 @@ class App:
 
         pyxel.init(WINDOW_W, WINDOW_H, caption="Share Game")
         pyxel.load("assets2.pyxres")
-
+        
+        self.start_flag = 1
         self.playing_flag = 1
         self.game_over_flag = 0
 
@@ -120,8 +122,6 @@ class App:
             Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
         ]
 
-        self.flag = 1
-        self.GameOver_flag = 0
 
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
@@ -176,6 +176,71 @@ class App:
         if self.enemy2.pos.y >= WINDOW_H:
             self.enemy2.pos.y = self.enemy2.default_y - 200
 
+        # ====== ctrl Enemy ======
+
+        for enemy in self.Enemies:
+            enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
+            if enemy.pos.y >= WINDOW_H - ENEMY_H:
+                enemy.pos.y = enemy.default_y - 256
+
+        self.enemy2.update(
+            self.enemy2.pos.x + self.enemy2.x_speed,
+            self.enemy2.pos.y + self.enemy2.y_speed
+        )
+
+        if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
+            self.enemy2.x_speed = -self.enemy2.x_speed
+
+        if self.enemy2.pos.y >= WINDOW_H:
+            self.enemy2.pos.y = self.enemy2.default_y - 200
+
+         # ====== Enemy Collision======
+
+        enemy_count = len(self.Enemies)
+        for i in range(enemy_count):
+        # 当たり判定(クリボーとマリオ)
+            if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
+                and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
+                and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) 
+                or (self.player.pos.x < self.Enemies[i].pos.x)
+                and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
+                and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H)
+                or (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
+                and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.Enemies[i].pos.y)
+                and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)
+                or (self.player.pos.x < self.Enemies[i].pos.x)
+                and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.Enemies[i].pos.y)
+                and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
+
+                print("衝突しました")
+
+            
+
+        # 当たり判定(こうらとマリオ)
+        if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
+            and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
+            and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
+            and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) 
+            or (self.player.pos.x < self.enemy2.pos.x)
+            and (self.enemy2.pos.x < self.player.pos.x + mario_W)
+            and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
+            and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H)
+            or (self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
+            and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
+            and (self.player.pos.y < self.enemy2.pos.y)
+            and (self.enemy2.pos.y < self.player.pos.y + mario_H)
+            or (self.player.pos.x < self.enemy2.pos.x)
+            and (self.enemy2.pos.x < self.player.pos.x + mario_W)
+            and (self.player.pos.y < self.enemy2.pos.y)
+            and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
+
+            print("こうら衝突しました")
+
+
         # ====== crtl Map ======
         if pyxel.frame_count % INGAME_COUNT == 0:
             for map in self.maps:
@@ -214,6 +279,7 @@ class App:
                 self.player.pos.x, self.player.pos.y,
                 self.player.img_mario, 0, 24, mario_W, mario_H, 0)
 
+
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
@@ -243,6 +309,10 @@ class App:
         pyxel.cls(0)
         pyxel.text(37, 100, "GAME OVER", 8)
 
+        if self.start_flag == 1:
+            pyxel.cls(0)
+            pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
+            pyxel.text(35, 80, "Game Start", 2)
 
 if __name__ == "__main__":
     App()
