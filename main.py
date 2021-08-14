@@ -1,6 +1,8 @@
 from typing import List, Tuple, Optional
 
 from game.game import App
+import confing
+from youtube_api import YoutubeLiveChat
 
 
 class App(App):
@@ -38,5 +40,5 @@ class App(App):
 
 
 if __name__ == "__main__":
-
+    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
     App()
