@@ -20,11 +20,13 @@ class Vec2:
 
 
 class Player:
-    def __init__(self, img_id, speed):
+    def __init__(self, img_id, speed, life=3):
+
         self.pos = Vec2(48, 176)
         self.vec = 0
         self.img_mario = img_id
         self.speed = speed
+        self.life = life
         self.a_pressed = False
         self.d_pressed = False
 
@@ -98,14 +100,15 @@ class App:
         self.PLAYER_IMG_ID = 1
         self.TILEMAP_ID = 0
 
-        pyxel.init(WINDOW_W, WINDOW_H, caption="Cat Game")
+        pyxel.init(WINDOW_W, WINDOW_H, caption="Share Game")
         pyxel.load("assets2.pyxres")
+        
+        self.start_flag = 1
+        self.playing_flag = 1
+        self.game_over_flag = 0
 
         # make instance
-
         self.player = Player(self.PLAYER_IMG_ID, mario_W)
-
-
         self.Enemies = [
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
@@ -123,10 +126,6 @@ class App:
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
 
-                # flag
-        self.flag = 0
-        self.start_flag = 1
-
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -136,7 +135,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-# ====== ctrl Cat ======
+        # ====== ctrl Player ======
         if pyxel.btnp(pyxel.KEY_A):
             self.player.a_pressed = True
         if pyxel.btnp(pyxel.KEY_D):
@@ -252,9 +251,16 @@ class App:
 
         # ====== ctrl Obstacle ======
         if pyxel.frame_count % INGAME_COUNT == 0:
-            index = int(pyxel.frame_count / INGAME_COUNT) % len(self.obstacle_lists)
-            self.collisions[0].update(self.obstacle_lists[index])
-            self.collisions[1].update(self.obstacle_lists[index - 1])
+            index = int(pyxel.frame_count /
+                        INGAME_COUNT) % len(self.obstacle_lists)
+
+            for i, collision in enumerate(self.collisions):
+                collision.update(
+                    self.obstacle_lists[index - i])
+                for i, obstacle in enumerate(collision.obstacle_list):
+                    if obstacle:
+                        if (i - 1) * 8 <= self.player.pos.x <= i * 8:
+                            self.player.life -= 1
 
     def draw(self):
         pyxel.cls(0)
@@ -263,13 +269,12 @@ class App:
         for map in self.maps:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
-        # ====== draw Cat ======
+        # ====== draw Player ======
         if self.player.vec == 1:
             pyxel.blt(
                 self.player.pos.x, self.player.pos.y,
                 self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
         else:
-
             pyxel.blt(
                 self.player.pos.x, self.player.pos.y,
                 self.player.img_mario, 0, 24, mario_W, mario_H, 0)
@@ -297,14 +302,18 @@ class App:
             ENEMY_H, 7
         )
 
+        if self.player.life < 1:
+            self.game_over()
+
+    def game_over(self):
+        pyxel.cls(0)
+        pyxel.text(37, 100, "GAME OVER", 8)
+
         if self.start_flag == 1:
             pyxel.cls(0)
             pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
             pyxel.text(35, 80, "Game Start", 2)
-  
-            
-
-
 
 if __name__ == "__main__":
     App()
+
