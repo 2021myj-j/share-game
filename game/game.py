@@ -13,7 +13,6 @@ ENEMY_W = 8
 INGAME_COUNT = 5
 
 
-
 class Vec2:
     def __init__(self, x, y):
         self.x = x
@@ -34,8 +33,9 @@ class Cat:
         self.pos.x = x
         self.pos.y = y
 
+
 class Enemy_kuri:
-    def __init__(self, img_id, speed,x,y):
+    def __init__(self, img_id, speed, x, y):
 
         self.pos = Vec2(x, y)
         self.vec = 0
@@ -46,6 +46,7 @@ class Enemy_kuri:
     def update(self, x, y):
         self.pos.x = x
         self.pos.y = y
+
 
 class Enemy_koura:
     def __init__(self, img_id, speed, x, y):
@@ -63,10 +64,8 @@ class Enemy_koura:
         self.pos.y = y
 
 
-
-
 class Map:
-    def __init__(self, tilemap_id, default_y, speed=5):
+    def __init__(self, tilemap_id, default_y, speed=8):
 
         self.pos = Vec2(0, default_y)
         self.tilemap = tilemap_id
@@ -102,24 +101,24 @@ class App:
 
         # make instance
         self.player = Cat(self.PLAYER_IMG_ID, mario_W)
-        self.Enemies = [Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30), 
-                        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
-                        Enemy_kuri(self.PLAYER_IMG_ID, 2, 100, -400), 
-                        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -450) ]
-        
+        self.Enemies = [
+            Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
+            Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
+            Enemy_kuri(self.PLAYER_IMG_ID, 2, 100, -400),
+            Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -450)
+        ]
+
         self.enemy2 = Enemy_koura(self.PLAYER_IMG_ID, 2, 10, 50)
         self.maps = [
             Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
             Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
         ]
 
-        
         self.flag = 1
         self.GameOver_flag = 0
 
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
-
 
         pyxel.run(self.update, self.draw)
 
@@ -133,8 +132,10 @@ class App:
         # ====== ctrl Cat ======
         if pyxel.btnp(pyxel.KEY_A):
             self.player.vec = 1
-            self.player.update(self.player.pos.x -
-                               self.player.speed, self.player.pos.y)
+            self.player.update(
+                self.player.pos.x - self.player.speed,
+                self.player.pos.y
+            )   # yapf: disable
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
         elif pyxel.btnp(pyxel.KEY_D):
@@ -144,23 +145,23 @@ class App:
                 self.player.update(WINDOW_W - mario_W, self.player.pos.y)
 
         # ====== ctrl Enemy ======
-        
+
         for enemy in self.Enemies:
-            enemy.update(enemy.pos.x , enemy.pos.y + enemy.speed)
+            enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
             if enemy.pos.y >= WINDOW_H - ENEMY_H:
                 enemy.pos.y = enemy.default_y - 256
 
-        
-        
-        self.enemy2.update(self.enemy2.pos.x + self.enemy2.x_speed , self.enemy2.pos.y + self.enemy2.y_speed)
+        self.enemy2.update(
+            self.enemy2.pos.x + self.enemy2.x_speed,
+            self.enemy2.pos.y + self.enemy2.y_speed
+        )
 
         if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
             self.enemy2.x_speed = -self.enemy2.x_speed
 
-        if self.enemy2.pos.y >= WINDOW_H :
-            self.enemy2.pos.y = self.enemy2.default_y -200
-            
-        
+        if self.enemy2.pos.y >= WINDOW_H:
+            self.enemy2.pos.y = self.enemy2.default_y - 200
+
         # ====== crtl Map ======
         if pyxel.frame_count % INGAME_COUNT == 0:
             for map in self.maps:
@@ -169,17 +170,12 @@ class App:
                 else:
                     map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
-
         # ====== ctrl Obstacle ======
 
         if pyxel.frame_count % INGAME_COUNT == 0:
-            index = int(pyxel.frame_count /
-                        INGAME_COUNT) % len(self.obstacle_lists)
-            self.collisions[0].update(
-                self.obstacle_lists[index])
-            self.collisions[1].update(
-                self.obstacle_lists[index - 1])
-
+            index = int(pyxel.frame_count / INGAME_COUNT) % len(self.obstacle_lists)
+            self.collisions[0].update(self.obstacle_lists[index])
+            self.collisions[1].update(self.obstacle_lists[index - 1])
 
     def draw(self):
         pyxel.cls(0)
@@ -199,12 +195,20 @@ class App:
         else:
             if self.player.vec == 1:
                 pyxel.blt(
-                    self.player.pos.x, self.player.pos.y,
-                    self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
+                    self.player.pos.x,
+                    self.player.pos.y,
+                    self.player.img_mario,
+                    0,
+                    24,
+                    -mario_W,
+                    mario_H,
+                    0
+                )  # yapf: disable
             else:
                 pyxel.blt(
-                    self.player.pos.x, self.player.pos.y,
-                    self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+                    self.player.pos.x, self.player.pos.y, self.player.img_mario, 0, 24,
+                    mario_W, mario_H, 0
+                )
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
@@ -217,15 +221,15 @@ class App:
         # ====== draw Enemy ======
 
         for enemy in self.Enemies:
-        
-            pyxel.blt(enemy.pos.x, enemy.pos.y ,
-              enemy.img_enemy, 16, 24, ENEMY_W, ENEMY_H, 7)
 
-        pyxel.blt(self.enemy2.pos.x, self.enemy2.pos.y,
-              self.enemy2.img_enemy, 24, 32, ENEMY_W, ENEMY_H, 7)
-        
-        
-        
+            pyxel.blt(
+                enemy.pos.x, enemy.pos.y, enemy.img_enemy, 16, 24, ENEMY_W, ENEMY_H, 7
+            )
+
+        pyxel.blt(
+            self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy, 24, 32, ENEMY_W,
+            ENEMY_H, 7
+        )
 
 
 if __name__ == "__main__":
