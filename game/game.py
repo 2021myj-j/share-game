@@ -27,11 +27,11 @@ class Cat:
 
 
 class Map:
-    def __init__(self, tilemap_id, default_y):
-        self.pos = Vec2(0, default_y)
-        self.tilemap = tilemap_id
-        self.speed = 32
-        self.default_y = default_y
+def __init__(self, tilemap_id, default_y, speed=32):
+         self.pos = Vec2(0, default_y)
+         self.tilemap = tilemap_id
+         self.speed = speed
+         self.default_y = default_y
 
     def update(self, x, y):
         self.pos.x = x
