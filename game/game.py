@@ -103,6 +103,7 @@ class App:
         self.TILEMAP_ID = 0
         self.count_amari = False
         self.start_count = 1800
+        self.debug_mode = debug_mode
 
 
         # make instance
@@ -368,5 +369,5 @@ class App:
 
 if __name__ == "__main__":
 
-    App()
+    App(debug_mode=True)
 
