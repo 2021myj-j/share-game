@@ -158,8 +158,7 @@ class App:
                     self.start_flag = 0
                     self.playing_flag = 1
         
-            if pyxel.frame_count % 30 == 0:
-                self.timer += 1
+            
 
 
 
@@ -170,6 +169,8 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if self.playing_flag == 1:
+            if pyxel.frame_count % 30 == 0:
+                self.timer += 1
             # ====== ctrl Player ======
             if pyxel.btnp(pyxel.KEY_A):
                 self.player.a_pressed = True
@@ -360,7 +361,8 @@ class App:
 
     def game_over(self):
         pyxel.cls(0)
-        pyxel.text(37, 100, "GAME OVER", 8)   
+        pyxel.text(37, 100, "GAME OVER", 8)
+        self.playing_flag = 0
         print(self.timer)
 
     #def time(self):
