@@ -40,3 +40,14 @@ def update_func(origin, before: list = [], after: list = []):
         origin(*args, **kwargs)
 
     return new_func
+
+def count_pattern(string, pattern):
+    res_of_count = string.count(pattern)
+    return res_of_count
+
+
+if __name__ == '__main__':
+    string = "abcdefgaaaa"
+    pattern = "a"
+    count_ans = count_pattern(string, pattern)
+    print(count_ans)
