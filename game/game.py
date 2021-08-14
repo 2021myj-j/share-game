@@ -30,6 +30,7 @@ class Player:
         self.life = life
         self.a_pressed = False
         self.d_pressed = False
+        self.y_pressed = False
 
     def update(self, x, y):
         """
@@ -97,14 +98,19 @@ class Collision:
 
 
 class App:
-    def __init__(self):
+    def __init__(self, debug_mode=False):
         self.PLAYER_IMG_ID = 1
         self.TILEMAP_ID = 0
         self.count_amari = False
         self.start_count = 1800
+        self.debug_mode = debug_mode
+
 
         # make instance
-        self.player = Player(self.PLAYER_IMG_ID, mario_W)
+        if self.debug_mode:
+            self.player = Player(self.PLAYER_IMG_ID, mario_W, 9999999)
+        else:
+            self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
         Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
         Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
@@ -139,7 +145,11 @@ class App:
         if self.start_flag == 1:
 
             if pyxel.btnp(pyxel.KEY_Y):
+                self.player.y_pressed = True
+
+            if self.player.y_pressed:
                 self.count_amari = True
+                self.player.y_pressed = False
 
             if self.count_amari == True:
                 if pyxel.frame_count % INGAME_COUNT == 0:
@@ -150,7 +160,6 @@ class App:
                     self.start_count = pyxel.frame_count
                     self.start_flag = 0
                     self.playing_flag = 1
-
 
 
 
@@ -362,4 +371,6 @@ class App:
         
 
 if __name__ == "__main__":
-    App()
+
+    App(debug_mode=True)
+
