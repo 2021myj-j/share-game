@@ -126,8 +126,17 @@ class ChatToCommand():
         else:
             return False
 
-    def data_to_valid_command_srt(data):
-        pass
+    def data_to_valid_command_srt(self, data):
+        command_srt_list = []
+        for i in data["comments"]:
+            display_message = i["display_message"]
+            command_srt_list.append(
+                "a" * self.count_a(display_message) +
+                "d" * self.count_d(display_message) +
+                "y" * self.count_y(display_message)
+            )  # yapf: disable
+
+        return command_srt_list
 
     def get_command_list(self, fps, num_of_msg, data):
 
