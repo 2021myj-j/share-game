@@ -15,6 +15,7 @@ class App(App):
         """
         self.command_list: Optional[List[Tuple[bool, bool]]] = None
         self.command_list = [(False, True) for i in range(3)]
+        self.youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
 
         super().__init__()
 
@@ -30,6 +31,7 @@ class App(App):
 
         if self.frame_counter % step == step - 1:
 
+            print(self.youtube_live_chat.get_next_chat_message())
             if not self.command_list:
                 self.command_list = self.get_command()
 
@@ -40,5 +42,5 @@ class App(App):
 
 
 if __name__ == "__main__":
-    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
+    # youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
     App()
