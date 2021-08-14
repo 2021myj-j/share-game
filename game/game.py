@@ -363,7 +363,8 @@ class App:
     def game_over(self):
         pyxel.cls(0)
         pyxel.text(37, 100, "GAME OVER", 8)
-
+        self.game_over_flag == 1
+        self.playing_flag == 0
 
 
     
