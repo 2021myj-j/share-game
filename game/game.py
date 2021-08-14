@@ -367,10 +367,10 @@ class App:
     def game_over(self):
         pyxel.cls(0)
         pyxel.text(37, 100, "GAME OVER", 8)
-        self.playing_flag == 0
         self.game_over_flag == 1
+        self.playing_flag == 0
 
-
+        
 if __name__ == "__main__":
 
     App(debug_mode=True)
