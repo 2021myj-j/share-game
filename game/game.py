@@ -1,6 +1,6 @@
 
 
-from random import randint
+from random import randint, random
 import pyxel
 from game.obstacle import ObstacleList
 
@@ -12,7 +12,7 @@ MAP_H = 2048
 MAP_W = 112
 ENEMY_H = 8
 ENEMY_W = 8
-INGAME_COUNT = 5
+INGAME_COUNT = 15
 
 
 class Vec2:
@@ -115,10 +115,10 @@ class App:
         else:
             self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
-        Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
-        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
-        Enemy_kuri(self.PLAYER_IMG_ID, 2, 100, -400),
-        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -450)
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.2, randint(0, 50), randint(-150, -50)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.3, randint(30, 80), randint(-350, -100)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.4, randint(60, WINDOW_W), randint(-600, -300)),
+        Enemy_kuri(self.PLAYER_IMG_ID, 0.5, randint(50, 100), randint(-700, -500))
         ]
 
         self.enemy2 = Enemy_koura(self.PLAYER_IMG_ID, 2, 10, 50)
