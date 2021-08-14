@@ -36,6 +36,7 @@ def update_func(origin, before: list = [], after: list = []):
     origin = deepcopy(origin)
 
     @add_operation(before, after)
+    @wraps(origin)
     def new_func(*args, **kwargs):
         origin(*args, **kwargs)
 
