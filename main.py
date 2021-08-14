@@ -29,12 +29,7 @@ class App(App):
 
     def input_command(self, step=1):
 
-        if self.frame_counter % step == step - 1:
-
-            print(self.youtube_live_chat.get_next_chat_message())
-            if not self.command_list:
-                self.command_list = self.get_command()
-
+        if self.frame_counter % step == step - 1 and not self.command_list:
             self.player.a_pressed, self.player.d_pressed = self.command_list.pop(0)
 
     def get_command(self):
