@@ -1,7 +1,6 @@
 from random import randint
 import pyxel
 from game.obstacle import ObstacleList
-import time
 
 WINDOW_H = 208
 WINDOW_W = 112
@@ -12,8 +11,6 @@ MAP_W = 112
 ENEMY_H = 8
 ENEMY_W = 8
 INGAME_COUNT = 15
-
-
 
 
 class Vec2:
@@ -110,7 +107,6 @@ class App:
 
         self.debug_mode = debug_mode
 
-
         # make instance
         if self.debug_mode:
             self.player = Player(self.PLAYER_IMG_ID, mario_W, 9999999)
@@ -127,8 +123,8 @@ class App:
             self.PLAYER_IMG_ID, 1.2, randint(0, 100), randint(-1000, -500)
         )
         self.maps = [
-        Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
-        Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
+            Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
+            Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
         ]
 
         self.collisions = [Collision([]), Collision([])]
@@ -141,13 +137,9 @@ class App:
         self.playing_flag = 0
         self.game_over_flag = 0
 
-
         self.timer = 0
 
         pyxel.run(self.update, self.draw)
-
-
-
 
     def update(self):
         if self.start_flag == 1:
@@ -159,7 +151,6 @@ class App:
             if self.player.y_pressed:
                 self.count_amari = True
                 self.player.y_pressed = False
-
 
             if self.count_amari == True:
                 if pyxel.frame_count % INGAME_COUNT == 0:
@@ -233,7 +224,6 @@ class App:
 
                     enemy.pos.y = enemy.default_y - randint(100, 300)
 
-
             self.enemy2.update(
                 self.enemy2.pos.x + self.enemy2.x_speed,
                 self.enemy2.pos.y + self.enemy2.y_speed
@@ -267,9 +257,7 @@ class App:
                     and (self.player.pos.y < self.Enemies[i].pos.y)
                     and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
 
-
                     self.damage()
-
 
             # 当たり判定(こうらとマリオ)
             if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
@@ -289,9 +277,7 @@ class App:
                 and (self.player.pos.y < self.enemy2.pos.y)
                 and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
 
-
                 self.damage()
-
 
             # ====== crtl Map ======
             if pyxel.frame_count % INGAME_COUNT == 0:
@@ -313,10 +299,10 @@ class App:
                         if obstacle:
                             if (i - 1) * 8 <= self.player.pos.x <= i * 8:
                                 self.damage()
-            
+
             if self.player.life < 1:
-                    self.playing_flag = 0
-                    self.game_over_flag = 1
+                self.playing_flag = 0
+                self.game_over_flag = 1
 
     def damage(self):
         if not self.player.is_invincible:
@@ -326,7 +312,6 @@ class App:
         else:
             if pyxel.frame_count - self.player.inv_start_frame > 60:
                 self.player.is_invincible = False
-
 
     def draw(self):
         pyxel.cls(0)
@@ -390,12 +375,10 @@ class App:
                 if 60 < pyxel.frame_count - self.start_count < 90:
                     pyxel.text(55, 120, "1", 8)
 
-    def game_over(self):
-        pyxel.cls(0)
-        pyxel.text(37, 100, "GAME OVER", 8)
-        self.game_over_flag == 1
-        self.playing_flag == 0
-
+        if self.game_over_flag == 1:
+            pyxel.cls(0)
+            pyxel.text(37, 50, "GAME OVER", 8)        
+            pyxel.text(30, 100, "Your time : " + str(self.timer), 10)
 
 
 if __name__ == "__main__":
