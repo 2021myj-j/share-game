@@ -26,89 +26,79 @@ def get_chat_id(yt_url):
     return chat_id
 
 
-def get_chat(chat_id, pageToken, log_file):
-    '''
-    https://developers.google.com/youtube/v3/live/docs/liveChatMessages/list
-    '''
+
+
+
+
+def get_chat_message(key, chat_id, pageToken=None, part='id,snippet,authorDetails'):
+    # inputの方がサガサイでやりやすそう
+
     url = 'https://www.googleapis.com/youtube/v3/liveChat/messages'
     params = {
-        'key': confing.YOTUBER_API_KEY,
+        'key': key,
         'liveChatId': chat_id,
-        'part': 'id,snippet,authorDetails'
+        'part': 'id,snippet,authorDetails',
     }
+
     if type(pageToken) == str:
         params['pageToken'] = pageToken
 
-    data = requests.get(url, params=params).json()
+    return requests.get(url, params=params).json()
+
+
+
+def format_row_yotube_data(data):
+    comments = []
 
     try:
         for item in data['items']:
             channelId = item['snippet']['authorChannelId']
-            msg = item['snippet']['displayMessage']
-            usr = item['authorDetails']['displayName']
-            log_text = '[by {}  https://www.youtube.com/channel/{}]\n  {}'.format(
-                usr, channelId, msg
-            )
-            with open(log_file, 'a') as f:
-                print(log_text, file=f)
-                print(log_text)
-        print('start : ', data['items'][0]['snippet']['publishedAt'])
-        print('end   : ', data['items'][-1]['snippet']['publishedAt'])
+            msg       = item['snippet']['displayMessage']
+            usr       = item['authorDetails']['displayName']
+
+            # 要求されたもの
+            comment = {
+             "author_channel_id": channelId,
+             "author_name": usr,
+             "display_message": msg,
+            }
+            comments.append(comment)
 
     except:
         pass
+    res = {
+        "next_page_token": data['nextPageToken'],
+        "comments": comments
+    }
 
-    return data['nextPageToken']
-
-
-def main(yt_url):
-    slp_time = 10  # sec
-    iter_times = 90  # 回
-    take_time = slp_time / 60 * iter_times
-    print('{}分後　終了予定'.format(take_time))
-    print('work on {}'.format(yt_url))
-
-    log_file = yt_url.replace('https://www.youtube.com/watch?v=', '') + '.txt'
-    with open(log_file, 'a') as f:
-        print('{} のチャット欄を記録します。'.format(yt_url), file=f)
-    chat_id = get_chat_id(yt_url)
-
-    nextPageToken = None
-    for ii in range(iter_times):
-        # for jj in [0]:
-        try:
-            print('\n')
-            nextPageToken = get_chat(chat_id, nextPageToken, log_file)
-            time.sleep(slp_time)
-        except:
-            break
+    return res
 
 
 if __name__ == '__main__':
     # yt_url = input('Input YouTube URL > ')
-    # main(yt_url)
+    # chat_id = get_chat_id(yt_url)
+    # chat_id = get_chat_id(confing.YOTUBER_URL)
 
+    # url = 'https://www.googleapis.com/youtube/v3/liveChat/messages'
+    # params = {
+    #     'key': confing.YOTUBER_API_KEY,
+    #     'liveChatId': chat_id,
+    #     'part': 'id,snippet,authorDetails'
+    # }
+    # pageToken = None
+
+    # if type(pageToken) == str:
+    #     params['pageToken'] = pageToken
+
+    # data = requests.get(url, params=params).json()
+    # print(data)
     chat_id = get_chat_id(confing.YOTUBER_URL)
+    data = get_chat_message(confing.YOTUBER_API_KEY, chat_id)
+    format_data = format_row_yotube_data(data)
+    print(format_data)
+    
 
-    url = 'https://www.googleapis.com/youtube/v3/liveChat/messages'
-    params = {
-        'key': confing.YOTUBER_API_KEY,
-        'liveChatId': chat_id,
-        'part': 'id,snippet,authorDetails'
-    }
-    pageToken = None
-
-    if type(pageToken) == str:
-        params['pageToken'] = pageToken
-
-    data = requests.get(url, params=params).json()
-    print(data)
-
-    def get_chat_message(key, chat_id, pageToken=None, part='id,snippet,authorDetails'):
-        return data
-
-    def format_row_yotube_data(data):
-        pass
+    
 
     # data = [
     #     {
