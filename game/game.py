@@ -1,3 +1,4 @@
+
 from random import randint
 import pyxel
 from game.obstacle import ObstacleList
@@ -102,7 +103,7 @@ class App:
         self.TILEMAP_ID = 0
         self.count_amari = False
         self.start_count = 1800
-        self.debug_mode = debug_mode
+
 
         # make instance
         if self.debug_mode:
@@ -140,14 +141,10 @@ class App:
 
 
     def update(self):
-        print(self.player.life)
         if self.start_flag == 1:
-            if pyxel.btnp(pyxel.KEY_Y):
-                self.player.y_pressed = True
 
-            if self.player.y_pressed:
+            if pyxel.btnp(pyxel.KEY_Y):
                 self.count_amari = True
-                self.player.y_pressed = False
 
             if self.count_amari == True:
                 if pyxel.frame_count % INGAME_COUNT == 0:
@@ -370,4 +367,6 @@ class App:
         
 
 if __name__ == "__main__":
-    App(debug_mode=True)
+
+    App()
+
