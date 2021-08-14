@@ -19,12 +19,13 @@ class Vec2:
         self.y = y
 
 
-class Cat:
-    def __init__(self, img_id, speed):
+class Player:
+    def __init__(self, img_id, speed, life=3):
         self.pos = Vec2(48, 176)
         self.vec = 0
         self.img_mario = img_id
         self.speed = speed
+        self.life = life
 
     def update(self, x, y):
         """
@@ -96,11 +97,14 @@ class App:
         self.PLAYER_IMG_ID = 1
         self.TILEMAP_ID = 0
 
-        pyxel.init(WINDOW_W, WINDOW_H, caption="Cat Game")
+        pyxel.init(WINDOW_W, WINDOW_H, caption="Share Game")
         pyxel.load("assets2.pyxres")
 
+        self.playing_flag = 1
+        self.game_over_flag = 0
+
         # make instance
-        self.player = Cat(self.PLAYER_IMG_ID, mario_W)
+        self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
@@ -129,7 +133,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        # ====== ctrl Cat ======
+        # ====== ctrl Player ======
         if pyxel.btnp(pyxel.KEY_A):
             self.player.vec = 1
             self.player.update(
@@ -171,11 +175,27 @@ class App:
                     map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
         # ====== ctrl Obstacle ======
-
         if pyxel.frame_count % INGAME_COUNT == 0:
-            index = int(pyxel.frame_count / INGAME_COUNT) % len(self.obstacle_lists)
-            self.collisions[0].update(self.obstacle_lists[index])
-            self.collisions[1].update(self.obstacle_lists[index - 1])
+            index = int(pyxel.frame_count /
+                        INGAME_COUNT) % len(self.obstacle_lists)
+
+            invincible_start_frame  = 0
+
+            for i, collision in enumerate(self.collisions):
+                collision.update(
+                    self.obstacle_lists[index - i])
+                for i, obstacle in enumerate(collision.obstacle_list):
+                    if obstacle:
+                        # isInvincible = self.invincible(pyxel.frame_count)
+                        if (i - 1) * 8 <= self.player.pos.x <= i * 8 and not isInvincible:
+
+                            isInvincible = self.invincible(invincible_start_frame)
+                            self.player.life -= 1
+                            print(self.player.life)
+                            
+    def invincible(self, start_frame):
+        if pyxel.frame_count - start_frame < 60:
+            return True
 
     def draw(self):
         pyxel.cls(0)
@@ -184,11 +204,11 @@ class App:
         for map in self.maps:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
-        # ====== draw Cat ======
+        # ====== draw Player ======
         if pyxel.btnp(pyxel.KEY_A):
             self.player.vec = 1
 
-        # ====== draw Cat ======
+        # ====== draw Player ======
         elif pyxel.btnp(pyxel.KEY_D):
             self.player.vec = 0
 
@@ -231,6 +251,14 @@ class App:
             ENEMY_H, 7
         )
 
+        if self.player.life < 1:
+            self.game_over()
+
+    def game_over(self):
+        pyxel.cls(0)
+        pyxel.text(37, 100, "GAME OVER", 8)
+
 
 if __name__ == "__main__":
     App()
+
