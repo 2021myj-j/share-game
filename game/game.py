@@ -26,6 +26,8 @@ class Player:
         self.img_mario = img_id
         self.speed = speed
         self.life = life
+        self.a_pressed = False
+        self.d_pressed = False
 
     def update(self, x, y):
         """
@@ -135,6 +137,11 @@ class App:
 
         # ====== ctrl Player ======
         if pyxel.btnp(pyxel.KEY_A):
+            self.player.a_pressed = True
+        if pyxel.btnp(pyxel.KEY_D):
+            self.player.d_pressed = True
+
+        if self.player.a_pressed:
             self.player.vec = 1
             self.player.update(
                 self.player.pos.x - self.player.speed,
@@ -142,11 +149,14 @@ class App:
             )   # yapf: disable
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
-        elif pyxel.btnp(pyxel.KEY_D):
+            self.player.a_pressed = False
+        elif self.player.d_pressed:
             self.player.vec = 0
-            self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x +
+                               self.player.speed, self.player.pos.y)
             if self.player.pos.x + mario_W > WINDOW_W:
                 self.player.update(WINDOW_W - mario_W, self.player.pos.y)
+            self.player.d_pressed = False
 
         # ====== ctrl Enemy ======
 
@@ -179,23 +189,13 @@ class App:
             index = int(pyxel.frame_count /
                         INGAME_COUNT) % len(self.obstacle_lists)
 
-            invincible_start_frame  = 0
-
             for i, collision in enumerate(self.collisions):
                 collision.update(
                     self.obstacle_lists[index - i])
                 for i, obstacle in enumerate(collision.obstacle_list):
                     if obstacle:
-                        # isInvincible = self.invincible(pyxel.frame_count)
-                        if (i - 1) * 8 <= self.player.pos.x <= i * 8 and not isInvincible:
-
-                            isInvincible = self.invincible(invincible_start_frame)
+                        if (i - 1) * 8 <= self.player.pos.x <= i * 8:
                             self.player.life -= 1
-                            print(self.player.life)
-                            
-    def invincible(self, start_frame):
-        if pyxel.frame_count - start_frame < 60:
-            return True
 
     def draw(self):
         pyxel.cls(0)
@@ -205,30 +205,15 @@ class App:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
         # ====== draw Player ======
-        if pyxel.btnp(pyxel.KEY_A):
-            self.player.vec = 1
-
-        # ====== draw Player ======
-        elif pyxel.btnp(pyxel.KEY_D):
-            self.player.vec = 0
-
+        if self.player.vec == 1:
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
         else:
-            if self.player.vec == 1:
-                pyxel.blt(
-                    self.player.pos.x,
-                    self.player.pos.y,
-                    self.player.img_mario,
-                    0,
-                    24,
-                    -mario_W,
-                    mario_H,
-                    0
-                )  # yapf: disable
-            else:
-                pyxel.blt(
-                    self.player.pos.x, self.player.pos.y, self.player.img_mario, 0, 24,
-                    mario_W, mario_H, 0
-                )
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
