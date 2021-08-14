@@ -297,6 +297,11 @@ class App:
                         if obstacle:
                             if (i - 1) * 8 <= self.player.pos.x <= i * 8:
                                 self.player.life -= 1
+
+            if self.player.life < 1:
+                    self.playing_flag = 0
+                    self.game_over_flag = 1
+                    
     
     
 
@@ -305,6 +310,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
         if self.playing_flag == 1:
+            
             # ====== draw Map ======
             for map in self.maps:
                 pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
@@ -342,8 +348,7 @@ class App:
                 ENEMY_H, 7
             )
 
-            if self.player.life < 1:
-                self.game_over()
+
 
         if self.start_flag == 1:
             pyxel.cls(0)
@@ -359,48 +364,17 @@ class App:
                 if 60 < pyxel.frame_count - self.start_count < 90:
                     pyxel.text(55, 120, "1", 8)
 
-    def game_over(self):
-        pyxel.cls(0)
-        pyxel.text(37, 100, "GAME OVER", 8)
-        self.playing_flag = 0
-        print(self.timer)
+    #def game_over(self):
+        if self.game_over_flag == 1:
 
-    #def time(self):
-        #pyxel.cls(0)
-        #if self.playing_flag == 1:
-            #start = time.time() 
-        #elif self.game_over_flag == 1:
-            #fini = time.time()
-
-        #print(self.elapsed_time )
-
-
-
-
-
+                pyxel.cls(0)
+                pyxel.text(37, 50, "GAME OVER", 8)         
+                pyxel.text(30, 100, "Your time : " + str(self.timer), 10) 
+        #time.sleep(10)
  
-    
-        
-        
-
-
-    
-
+        #self.playing_flag = 0 
         
 
 if __name__ == "__main__":
     App()
 
-# 処理前の時刻
-#start = time.time() 
- 
-# 計測したい処理
-#for i in range(1000000):
-    #i ** 10
- 
-# 処理後の時刻
-#fini = time.time()
- 
-# 経過時間を表示
-#elapsed_time = fini - start
-#print(f"経過時間：{elapsed_time}")
