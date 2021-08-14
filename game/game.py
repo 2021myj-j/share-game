@@ -104,6 +104,7 @@ class App:
         self.TILEMAP_ID = 0
         self.count_amari = False
         self.start_count = 1800
+
         self.debug_mode = debug_mode
 
         # make instance
@@ -136,12 +137,15 @@ class App:
         self.playing_flag = 0
         self.game_over_flag = 0
 
+        self.timer = 0
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if self.start_flag == 1:
 
             if pyxel.btnp(pyxel.KEY_Y):
+
                 self.player.y_pressed = True
 
             if self.player.y_pressed:
@@ -157,12 +161,17 @@ class App:
                 self.start_count = pyxel.frame_count
                 self.start_flag = 0
                 self.playing_flag = 1
+
         """
         プレイヤーとマップを動かす
         """
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if self.playing_flag == 1:
+
+            if pyxel.frame_count % 30 == 0:
+                self.timer += 1
+
             # ====== ctrl Player ======
             if pyxel.btnp(pyxel.KEY_A):
                 self.player.a_pressed = True
@@ -180,9 +189,11 @@ class App:
                 self.player.a_pressed = False
             elif self.player.d_pressed:
                 self.player.vec = 0
+
                 self.player.update(
                     self.player.pos.x + self.player.speed, self.player.pos.y
                 )
+
                 if self.player.pos.x + mario_W > WINDOW_W:
                     self.player.update(WINDOW_W - mario_W, self.player.pos.y)
                 self.player.d_pressed = False
@@ -210,6 +221,7 @@ class App:
             for enemy in self.Enemies:
                 enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
                 if enemy.pos.y >= WINDOW_H - ENEMY_H:
+
                     enemy.pos.y = enemy.default_y - randint(100, 300)
 
             self.enemy2.update(
@@ -227,6 +239,7 @@ class App:
             enemy_count = len(self.Enemies)
             for i in range(enemy_count):
                 # 当たり判定(クリボーとマリオ)
+
                 if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
                     and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
                     and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
@@ -276,6 +289,7 @@ class App:
 
             # ====== ctrl Obstacle ======
             if pyxel.frame_count % INGAME_COUNT == 0:
+
                 index = int((pyxel.frame_count - self.start_count) / INGAME_COUNT
                             ) % len(self.obstacle_lists)
 
@@ -285,6 +299,10 @@ class App:
                         if obstacle:
                             if (i - 1) * 8 <= self.player.pos.x <= i * 8:
                                 self.damage()
+
+            if self.player.life < 1:
+                self.playing_flag = 0
+                self.game_over_flag = 1
 
     def damage(self):
         if not self.player.is_invincible:
@@ -298,6 +316,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
         if self.playing_flag == 1:
+
             # ====== draw Map ======
             for map in self.maps:
                 pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
@@ -356,11 +375,10 @@ class App:
                 if 60 < pyxel.frame_count - self.start_count < 90:
                     pyxel.text(55, 120, "1", 8)
 
-    def game_over(self):
-        pyxel.cls(0)
-        pyxel.text(37, 100, "GAME OVER", 8)
-        self.game_over_flag == 1
-        self.playing_flag == 0
+        if self.game_over_flag == 1:
+            pyxel.cls(0)
+            pyxel.text(37, 50, "GAME OVER", 8)        
+            pyxel.text(30, 100, "Your time : " + str(self.timer), 10)
 
 
 if __name__ == "__main__":
