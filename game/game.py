@@ -3,8 +3,8 @@ from obstacle import ObstacleList
 
 WINDOW_H = 208
 WINDOW_W = 112
-CAT_H = 16
-CAT_W = 16
+mario_H = 16
+mario_W = 16
 MAP_H = 2048
 MAP_W = 112
 INGAME_COUNT = 5
@@ -20,7 +20,7 @@ class Cat:
     def __init__(self, img_id, speed):
         self.pos = Vec2(48, 176)
         self.vec = 0
-        self.img_cat = img_id
+        self.img_mario = img_id
         self.speed = speed
 
     def update(self, x, y):
@@ -66,7 +66,7 @@ class App:
         pyxel.load("assets2.pyxres")
 
         # make instance
-        self.player = Cat(self.PLAYER_IMG_ID, CAT_W)
+        self.player = Cat(self.PLAYER_IMG_ID, mario_W)
         self.maps = [Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
                      Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)]
         self.collisions = [Collision([]), Collision([])]
@@ -83,15 +83,17 @@ class App:
 
         # ====== ctrl Cat ======
         if pyxel.btnp(pyxel.KEY_A):
+            self.player.vec = 1
             self.player.update(self.player.pos.x -
                                self.player.speed, self.player.pos.y)
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
         elif pyxel.btnp(pyxel.KEY_D):
+            self.player.vec = 0
             self.player.update(self.player.pos.x +
                                self.player.speed, self.player.pos.y)
-            if self.player.pos.x + CAT_W > WINDOW_W:
-                self.player.update(WINDOW_W - CAT_W, self.player.pos.y)
+            if self.player.pos.x + mario_W > WINDOW_W:
+                self.player.update(WINDOW_W - mario_W, self.player.pos.y)
 
         # ====== crtl Map ======
         if pyxel.frame_count % INGAME_COUNT == 0:
@@ -120,8 +122,12 @@ class App:
                        0, 0, MAP_W, MAP_H, 13)
 
         # ====== draw Cat ======
-        pyxel.blt(self.player.pos.x, self.player.pos.y,
-                  self.player.img_cat, 0, 0, CAT_W, CAT_H, 13)
+            if self.player.vec == 1:
+                pyxel.blt(self.player.pos.x, self.player.pos.y,
+                          self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
+            else:
+                pyxel.blt(self.player.pos.x, self.player.pos.y,
+                          self.player.img_mario, 0, 24, mario_W, mario_H, 0)
 
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
