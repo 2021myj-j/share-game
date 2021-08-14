@@ -120,8 +120,15 @@ class App:
         # ====== draw Map ======
         for map in self.maps:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
+        # ====== draw Cat ======
+        if pyxel.btnp(pyxel.KEY_A):
+            self.player.vec = 1
 
         # ====== draw Cat ======
+        elif pyxel.btnp(pyxel.KEY_D):
+            self.player.vec = 0
+
+        else:
             if self.player.vec == 1:
                 pyxel.blt(
                     self.player.pos.x, self.player.pos.y,
@@ -130,7 +137,6 @@ class App:
                 pyxel.blt(
                     self.player.pos.x, self.player.pos.y,
                     self.player.img_mario, 0, 24, mario_W, mario_H, 0)
-
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
