@@ -145,7 +145,11 @@ class App:
         if self.start_flag == 1:
 
             if pyxel.btnp(pyxel.KEY_Y):
+                self.player.y_pressed = True
+
+            if self.player.y_pressed:
                 self.count_amari = True
+                self.player.y_pressed = False
 
             if self.count_amari == True:
                 if pyxel.frame_count % INGAME_COUNT == 0:
@@ -156,7 +160,6 @@ class App:
                     self.start_count = pyxel.frame_count
                     self.start_flag = 0
                     self.playing_flag = 1
-
 
 
 
