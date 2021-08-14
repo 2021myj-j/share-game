@@ -2,8 +2,8 @@ import pyxel
 
 WINDOW_H = 208
 WINDOW_W = 112
-CAT_H = 16
-CAT_W = 16
+mario_H = 16
+mario_W = 16
 MAP_H = 2048
 MAP_W = 112
 
@@ -18,7 +18,7 @@ class Cat:
     def __init__(self, img_id, speed):
         self.pos = Vec2(48, 176)
         self.vec = 0
-        self.img_cat = img_id
+        self.img_mario = img_id
         self.speed = speed
 
     def update(self, x, y):
@@ -44,10 +44,10 @@ class App:
         self.TILEMAP_ID = 0
 
         pyxel.init(WINDOW_W, WINDOW_H, caption="Cat Game")
-        pyxel.load("assets.pyxres")
+        pyxel.load("assets2.pyxres")
 
         # make instance
-        self.player = Cat(self.PLAYER_IMG_ID, CAT_W)
+        self.player = Cat(self.PLAYER_IMG_ID, mario_W)
         self.maps = [
             Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
             Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
@@ -66,8 +66,8 @@ class App:
                 self.player.update(0, self.player.pos.y)
         elif pyxel.btnp(pyxel.KEY_D):
             self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
-            if self.player.pos.x + CAT_W > WINDOW_W:
-                self.player.update(WINDOW_W - CAT_W, self.player.pos.y)
+            if self.player.pos.x + mario_W > WINDOW_W:
+                self.player.update(WINDOW_W - mario_W, self.player.pos.y)
 
         # ====== crtl Map ======
         if pyxel.frame_count % 5 == 0:
@@ -84,12 +84,20 @@ class App:
 
         for map in self.maps:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
+        # ====== draw Cat ======
+        if pyxel.btnp(pyxel.KEY_A):
+            self.player.vec = 1
 
-            # ====== draw Cat ======
-        pyxel.blt(
-            self.player.pos.x, self.player.pos.y, self.player.img_cat, 0, 0, CAT_W, CAT_H,
-            13
-        )
+        elif pyxel.btnp(pyxel.KEY_D):
+            self.player.vec = 0
+
+        else :
+            if self.player.vec == 1:
+                pyxel.blt(self.player.pos.x, self.player.pos.y,
+                  self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
+            else:
+                pyxel.blt(self.player.pos.x, self.player.pos.y,
+                  self.player.img_mario, 0, 24, mario_W, mario_H, 0)
 
 
 if __name__ == "__main__":
