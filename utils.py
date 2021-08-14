@@ -42,6 +42,7 @@ def update_func(origin, before: list = [], after: list = []):
 
     return new_func
 
+
 def count_pattern(string, pattern):
     res_of_count = string.count(pattern)
     return res_of_count
