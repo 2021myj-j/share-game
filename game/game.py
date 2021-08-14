@@ -27,11 +27,11 @@ class Cat:
 
 
 class Map:
-def __init__(self, tilemap_id, default_y, speed=32):
-         self.pos = Vec2(0, default_y)
-         self.tilemap = tilemap_id
-         self.speed = speed
-         self.default_y = default_y
+    def __init__(self, tilemap_id, default_y, speed=32):
+        self.pos = Vec2(0, default_y)
+        self.tilemap = tilemap_id
+        self.speed = speed
+        self.default_y = default_y
 
     def update(self, x, y):
         self.pos.x = x
@@ -48,8 +48,10 @@ class App:
 
         # make instance
         self.player = Cat(self.PLAYER_IMG_ID, CAT_W)
-        self.maps = [Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
-                     Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)]
+        self.maps = [
+            Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
+            Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
+        ]
 
         pyxel.run(self.update, self.draw)
 
@@ -59,13 +61,11 @@ class App:
 
         # ====== ctrl Cat ======
         if pyxel.btnp(pyxel.KEY_A):
-            self.player.update(self.player.pos.x -
-                               self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x - self.player.speed, self.player.pos.y)
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
         elif pyxel.btnp(pyxel.KEY_D):
-            self.player.update(self.player.pos.x +
-                               self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
             if self.player.pos.x + CAT_W > WINDOW_W:
                 self.player.update(WINDOW_W - CAT_W, self.player.pos.y)
 
@@ -83,12 +83,13 @@ class App:
         # ====== draw Map ======
 
         for map in self.maps:
-            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap,
-                       0, 0, MAP_W, MAP_H, 13)
+            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
             # ====== draw Cat ======
-        pyxel.blt(self.player.pos.x, self.player.pos.y,
-                  self.player.img_cat, 0, 0, CAT_W, CAT_H, 13)
+        pyxel.blt(
+            self.player.pos.x, self.player.pos.y, self.player.img_cat, 0, 0, CAT_W, CAT_H,
+            13
+        )
 
 
 if __name__ == "__main__":
