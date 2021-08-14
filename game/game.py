@@ -1,6 +1,7 @@
 from random import randint
 import pyxel
 from game.obstacle import ObstacleList
+import time
 
 WINDOW_H = 208
 WINDOW_W = 112
@@ -11,6 +12,8 @@ MAP_W = 112
 ENEMY_H = 8
 ENEMY_W = 8
 INGAME_COUNT = 5
+
+
 
 
 class Vec2:
@@ -99,221 +102,303 @@ class App:
     def __init__(self):
         self.PLAYER_IMG_ID = 1
         self.TILEMAP_ID = 0
-
-        pyxel.init(WINDOW_W, WINDOW_H, caption="Share Game")
-        pyxel.load("assets2.pyxres")
-        
-        self.start_flag = 1
-        self.playing_flag = 1
-        self.game_over_flag = 0
+        self.count_amari = False
+        self.start_count = 1800
+      
 
         # make instance
         self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
-            Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
-            Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
-            Enemy_kuri(self.PLAYER_IMG_ID, 2, 100, -400),
-            Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -450)
+        Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
+        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
+        Enemy_kuri(self.PLAYER_IMG_ID, 2, 100, -400),
+        Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -450)
         ]
 
         self.enemy2 = Enemy_koura(self.PLAYER_IMG_ID, 2, 10, 50)
         self.maps = [
-            Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
-            Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
+        Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
+        Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
         ]
 
 
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
 
+        pyxel.init(WINDOW_W, WINDOW_H, caption="Share Game")
+        pyxel.load("assets2.pyxres")
+        
+        self.start_flag = 1
+        self.playing_flag = 0
+        self.game_over_flag = 0
+
+        self.timer = 0
+        
+
+
+        
         pyxel.run(self.update, self.draw)
 
+
+
+
     def update(self):
+        if self.start_flag == 1:
+
+            if pyxel.btnp(pyxel.KEY_Y):
+                self.count_amari = True
+
+            if self.count_amari == True:
+                if pyxel.frame_count % INGAME_COUNT == 0:
+                    self.start_count = pyxel.frame_count
+                    self.count_amari = False
+
+            if pyxel.frame_count - self.start_count >= 90:
+                    self.start_count = pyxel.frame_count
+                    self.start_flag = 0
+                    self.playing_flag = 1
+        
+            if pyxel.frame_count % 30 == 0:
+                self.timer += 1
+
+
+
+
         """
         プレイヤーとマップを動かす
         """
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+        if self.playing_flag == 1:
+            # ====== ctrl Player ======
+            if pyxel.btnp(pyxel.KEY_A):
+                self.player.a_pressed = True
+            if pyxel.btnp(pyxel.KEY_D):
+                self.player.d_pressed = True
 
-        # ====== ctrl Player ======
-        if pyxel.btnp(pyxel.KEY_A):
-            self.player.a_pressed = True
-        if pyxel.btnp(pyxel.KEY_D):
-            self.player.d_pressed = True
+            if self.player.a_pressed:
+                self.player.vec = 1
+                self.player.update(
+                    self.player.pos.x - self.player.speed,
+                    self.player.pos.y
+                )   # yapf: disable
+                if self.player.pos.x < 0:
+                    self.player.update(0, self.player.pos.y)
+                self.player.a_pressed = False
+            elif self.player.d_pressed:
+                self.player.vec = 0
+                self.player.update(self.player.pos.x +
+                                self.player.speed, self.player.pos.y)
+                if self.player.pos.x + mario_W > WINDOW_W:
+                    self.player.update(WINDOW_W - mario_W, self.player.pos.y)
+                self.player.d_pressed = False
 
-        if self.player.a_pressed:
-            self.player.vec = 1
-            self.player.update(
-                self.player.pos.x - self.player.speed,
-                self.player.pos.y
-            )   # yapf: disable
-            if self.player.pos.x < 0:
-                self.player.update(0, self.player.pos.y)
-            self.player.a_pressed = False
-        elif self.player.d_pressed:
-            self.player.vec = 0
-            self.player.update(self.player.pos.x +
-                               self.player.speed, self.player.pos.y)
-            if self.player.pos.x + mario_W > WINDOW_W:
-                self.player.update(WINDOW_W - mario_W, self.player.pos.y)
-            self.player.d_pressed = False
+            # ====== ctrl Enemy ======
 
-        # ====== ctrl Enemy ======
+            for enemy in self.Enemies:
+                enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
+                if enemy.pos.y >= WINDOW_H - ENEMY_H:
+                    enemy.pos.y = enemy.default_y - 256
 
-        for enemy in self.Enemies:
-            enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-            if enemy.pos.y >= WINDOW_H - ENEMY_H:
-                enemy.pos.y = enemy.default_y - 256
+            self.enemy2.update(
+                self.enemy2.pos.x + self.enemy2.x_speed,
+                self.enemy2.pos.y + self.enemy2.y_speed
+            )
 
-        self.enemy2.update(
-            self.enemy2.pos.x + self.enemy2.x_speed,
-            self.enemy2.pos.y + self.enemy2.y_speed
-        )
+            if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
+                self.enemy2.x_speed = -self.enemy2.x_speed
 
-        if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
-            self.enemy2.x_speed = -self.enemy2.x_speed
+            if self.enemy2.pos.y >= WINDOW_H:
+                self.enemy2.pos.y = self.enemy2.default_y - 200
 
-        if self.enemy2.pos.y >= WINDOW_H:
-            self.enemy2.pos.y = self.enemy2.default_y - 200
+            # ====== ctrl Enemy ======
 
-        # ====== ctrl Enemy ======
+            for enemy in self.Enemies:
+                enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
+                if enemy.pos.y >= WINDOW_H - ENEMY_H:
+                    enemy.pos.y = enemy.default_y - 256
 
-        for enemy in self.Enemies:
-            enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-            if enemy.pos.y >= WINDOW_H - ENEMY_H:
-                enemy.pos.y = enemy.default_y - 256
+            self.enemy2.update(
+                self.enemy2.pos.x + self.enemy2.x_speed,
+                self.enemy2.pos.y + self.enemy2.y_speed
+            )
 
-        self.enemy2.update(
-            self.enemy2.pos.x + self.enemy2.x_speed,
-            self.enemy2.pos.y + self.enemy2.y_speed
-        )
+            if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
+                self.enemy2.x_speed = -self.enemy2.x_speed
 
-        if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
-            self.enemy2.x_speed = -self.enemy2.x_speed
+            if self.enemy2.pos.y >= WINDOW_H:
+                self.enemy2.pos.y = self.enemy2.default_y - 200
 
-        if self.enemy2.pos.y >= WINDOW_H:
-            self.enemy2.pos.y = self.enemy2.default_y - 200
+            # ====== Enemy Collision======
 
-         # ====== Enemy Collision======
+            enemy_count = len(self.Enemies)
+            for i in range(enemy_count):
+            # 当たり判定(クリボーとマリオ)
+                if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
+                    and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                    and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
+                    and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) 
+                    or (self.player.pos.x < self.Enemies[i].pos.x)
+                    and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
+                    and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
+                    and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H)
+                    or (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
+                    and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                    and (self.player.pos.y < self.Enemies[i].pos.y)
+                    and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)
+                    or (self.player.pos.x < self.Enemies[i].pos.x)
+                    and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
+                    and (self.player.pos.y < self.Enemies[i].pos.y)
+                    and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
 
-        enemy_count = len(self.Enemies)
-        for i in range(enemy_count):
-        # 当たり判定(クリボーとマリオ)
-            if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
-                and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
-                and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) 
-                or (self.player.pos.x < self.Enemies[i].pos.x)
-                and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
-                and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H)
-                or (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
-                and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.Enemies[i].pos.y)
-                and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)
-                or (self.player.pos.x < self.Enemies[i].pos.x)
-                and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.Enemies[i].pos.y)
-                and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
+                    print("衝突しました")
 
-                print("衝突しました")
+                
 
-            
+            # 当たり判定(こうらとマリオ)
+            if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
+                and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
+                and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) 
+                or (self.player.pos.x < self.enemy2.pos.x)
+                and (self.enemy2.pos.x < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
+                and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H)
+                or (self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
+                and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.enemy2.pos.y)
+                and (self.enemy2.pos.y < self.player.pos.y + mario_H)
+                or (self.player.pos.x < self.enemy2.pos.x)
+                and (self.enemy2.pos.x < self.player.pos.x + mario_W)
+                and (self.player.pos.y < self.enemy2.pos.y)
+                and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
 
-        # 当たり判定(こうらとマリオ)
-        if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
-            and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
-            and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
-            and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) 
-            or (self.player.pos.x < self.enemy2.pos.x)
-            and (self.enemy2.pos.x < self.player.pos.x + mario_W)
-            and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
-            and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H)
-            or (self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
-            and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
-            and (self.player.pos.y < self.enemy2.pos.y)
-            and (self.enemy2.pos.y < self.player.pos.y + mario_H)
-            or (self.player.pos.x < self.enemy2.pos.x)
-            and (self.enemy2.pos.x < self.player.pos.x + mario_W)
-            and (self.player.pos.y < self.enemy2.pos.y)
-            and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
-
-            print("こうら衝突しました")
+                print("こうら衝突しました")
 
 
-        # ====== crtl Map ======
-        if pyxel.frame_count % INGAME_COUNT == 0:
-            for map in self.maps:
-                if map.pos.y < WINDOW_H:
-                    map.update(map.pos.x, map.pos.y + map.speed)
-                else:
-                    map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
+            # ====== crtl Map ======
+            if pyxel.frame_count % INGAME_COUNT == 0:
+                for map in self.maps:
+                    if map.pos.y < WINDOW_H:
+                        map.update(map.pos.x, map.pos.y + map.speed)
+                    else:
+                        map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
-        # ====== ctrl Obstacle ======
-        if pyxel.frame_count % INGAME_COUNT == 0:
-            index = int(pyxel.frame_count /
-                        INGAME_COUNT) % len(self.obstacle_lists)
+            # ====== ctrl Obstacle ======
+            if pyxel.frame_count % INGAME_COUNT == 0:
+                index = int((pyxel.frame_count - self.start_count) /
+                            INGAME_COUNT) % len(self.obstacle_lists)
 
-            for i, collision in enumerate(self.collisions):
-                collision.update(
-                    self.obstacle_lists[index - i])
-                for i, obstacle in enumerate(collision.obstacle_list):
-                    if obstacle:
-                        if (i - 1) * 8 <= self.player.pos.x <= i * 8:
-                            self.player.life -= 1
+                for i, collision in enumerate(self.collisions):
+                    collision.update(
+                        self.obstacle_lists[index - i])
+                    for i, obstacle in enumerate(collision.obstacle_list):
+                        if obstacle:
+                            if (i - 1) * 8 <= self.player.pos.x <= i * 8:
+                                self.player.life -= 1
+    
+    
+
+  
 
     def draw(self):
         pyxel.cls(0)
+        if self.playing_flag == 1:
+            # ====== draw Map ======
+            for map in self.maps:
+                pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
-        # ====== draw Map ======
-        for map in self.maps:
-            pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
+            # ====== draw Player ======
+            if self.player.vec == 1:
+                pyxel.blt(
+                    self.player.pos.x, self.player.pos.y,
+                    self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
+            else:
+                pyxel.blt(
+                    self.player.pos.x, self.player.pos.y,
+                    self.player.img_mario, 0, 24, mario_W, mario_H, 0)
 
-        # ====== draw Player ======
-        if self.player.vec == 1:
+
+            # ====== draw Collision ======
+            # デバッグ用に当たり判定可視化
+            for i, obstacle in enumerate(self.collisions[0].obstacle_list):
+                if obstacle:
+                    pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
+            for i, obstacle in enumerate(self.collisions[1].obstacle_list):
+                if obstacle:
+                    pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
+
+            # ====== draw Enemy ======
+
+            for enemy in self.Enemies:
+
+                pyxel.blt(
+                    enemy.pos.x, enemy.pos.y, enemy.img_enemy, 16, 24, ENEMY_W, ENEMY_H, 7
+                )
+
             pyxel.blt(
-                self.player.pos.x, self.player.pos.y,
-                self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
-        else:
-            pyxel.blt(
-                self.player.pos.x, self.player.pos.y,
-                self.player.img_mario, 0, 24, mario_W, mario_H, 0)
-
-
-        # ====== draw Collision ======
-        # デバッグ用に当たり判定可視化
-        for i, obstacle in enumerate(self.collisions[0].obstacle_list):
-            if obstacle:
-                pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
-        for i, obstacle in enumerate(self.collisions[1].obstacle_list):
-            if obstacle:
-                pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
-
-        # ====== draw Enemy ======
-
-        for enemy in self.Enemies:
-
-            pyxel.blt(
-                enemy.pos.x, enemy.pos.y, enemy.img_enemy, 16, 24, ENEMY_W, ENEMY_H, 7
+                self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy, 24, 32, ENEMY_W,
+                ENEMY_H, 7
             )
 
-        pyxel.blt(
-            self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy, 24, 32, ENEMY_W,
-            ENEMY_H, 7
-        )
-
-        if self.player.life < 1:
-            self.game_over()
-
-    def game_over(self):
-        pyxel.cls(0)
-        pyxel.text(37, 100, "GAME OVER", 8)
+            if self.player.life < 1:
+                self.game_over()
 
         if self.start_flag == 1:
             pyxel.cls(0)
             pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
-            pyxel.text(35, 80, "Game Start", 2)
+            pyxel.text(35, 80, "Game Start", 8)
+            
+            
+            if 0 < pyxel.frame_count - self.start_count < 90:
+                if 0 < pyxel.frame_count - self.start_count < 30:
+                    pyxel.text(55, 120, "3", 8)
+                if 30 < pyxel.frame_count - self.start_count < 60:
+                    pyxel.text(55, 120, "2", 8)
+                if 60 < pyxel.frame_count - self.start_count < 90:
+                    pyxel.text(55, 120, "1", 8)
+
+    def game_over(self):
+        pyxel.cls(0)
+        pyxel.text(37, 100, "GAME OVER", 8)   
+        print(self.timer)
+
+    #def time(self):
+        #pyxel.cls(0)
+        #if self.playing_flag == 1:
+            #start = time.time() 
+        #elif self.game_over_flag == 1:
+            #fini = time.time()
+
+        #print(self.elapsed_time )
+
+
+
+
+
+ 
+    
+        
+        
+
+
+    
+
+        
 
 if __name__ == "__main__":
     App()
 
+# 処理前の時刻
+#start = time.time() 
+ 
+# 計測したい処理
+#for i in range(1000000):
+    #i ** 10
+ 
+# 処理後の時刻
+#fini = time.time()
+ 
+# 経過時間を表示
+#elapsed_time = fini - start
+#print(f"経過時間：{elapsed_time}")
