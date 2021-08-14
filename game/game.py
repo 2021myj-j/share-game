@@ -25,6 +25,8 @@ class Player:
         self.vec = 0
         self.img_mario = img_id
         self.speed = speed
+        self.a_pressed = False
+        self.d_pressed = False
 
     def update(self, x, y):
         """
@@ -100,7 +102,10 @@ class App:
         pyxel.load("assets2.pyxres")
 
         # make instance
+
         self.player = Player(self.PLAYER_IMG_ID, mario_W)
+
+
         self.Enemies = [
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 0, -30),
             Enemy_kuri(self.PLAYER_IMG_ID, 2, 50, -150),
@@ -113,6 +118,7 @@ class App:
             Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
             Map(self.TILEMAP_ID, -MAP_H * 2 + WINDOW_H)
         ]
+
 
         self.collisions = [Collision([]), Collision([])]
         self.obstacle_lists = ObstacleList.obstacle_lists
@@ -130,8 +136,13 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        # ====== ctrl Cat ======
+# ====== ctrl Cat ======
         if pyxel.btnp(pyxel.KEY_A):
+            self.player.a_pressed = True
+        if pyxel.btnp(pyxel.KEY_D):
+            self.player.d_pressed = True
+
+        if self.player.a_pressed:
             self.player.vec = 1
             self.player.update(
                 self.player.pos.x - self.player.speed,
@@ -139,11 +150,32 @@ class App:
             )   # yapf: disable
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
-        elif pyxel.btnp(pyxel.KEY_D):
+            self.player.a_pressed = False
+        elif self.player.d_pressed:
             self.player.vec = 0
-            self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x +
+                               self.player.speed, self.player.pos.y)
             if self.player.pos.x + mario_W > WINDOW_W:
                 self.player.update(WINDOW_W - mario_W, self.player.pos.y)
+            self.player.d_pressed = False
+
+        # ====== ctrl Enemy ======
+
+        for enemy in self.Enemies:
+            enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
+            if enemy.pos.y >= WINDOW_H - ENEMY_H:
+                enemy.pos.y = enemy.default_y - 256
+
+        self.enemy2.update(
+            self.enemy2.pos.x + self.enemy2.x_speed,
+            self.enemy2.pos.y + self.enemy2.y_speed
+        )
+
+        if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
+            self.enemy2.x_speed = -self.enemy2.x_speed
+
+        if self.enemy2.pos.y >= WINDOW_H:
+            self.enemy2.pos.y = self.enemy2.default_y - 200
 
         # ====== ctrl Enemy ======
 
@@ -219,7 +251,6 @@ class App:
                     map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
         # ====== ctrl Obstacle ======
-
         if pyxel.frame_count % INGAME_COUNT == 0:
             index = int(pyxel.frame_count / INGAME_COUNT) % len(self.obstacle_lists)
             self.collisions[0].update(self.obstacle_lists[index])
@@ -233,30 +264,17 @@ class App:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
 
         # ====== draw Cat ======
-        if pyxel.btnp(pyxel.KEY_A):
-            self.player.vec = 1
-
-        # ====== draw Cat ======
-        elif pyxel.btnp(pyxel.KEY_D):
-            self.player.vec = 0
-
+        if self.player.vec == 1:
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
         else:
-            if self.player.vec == 1:
-                pyxel.blt(
-                    self.player.pos.x,
-                    self.player.pos.y,
-                    self.player.img_mario,
-                    0,
-                    24,
-                    -mario_W,
-                    mario_H,
-                    0
-                )  # yapf: disable
-            else:
-                pyxel.blt(
-                    self.player.pos.x, self.player.pos.y, self.player.img_mario, 0, 24,
-                    mario_W, mario_H, 0
-                )
+
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+
+
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
@@ -278,14 +296,13 @@ class App:
             self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy, 24, 32, ENEMY_W,
             ENEMY_H, 7
         )
-        
+
         if self.start_flag == 1:
             pyxel.cls(0)
             pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
             pyxel.text(35, 80, "Game Start", 2)
   
             
-            #pyxel.blt(61, 66, 0, 0, 0, 38, 16)
 
 
 
