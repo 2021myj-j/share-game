@@ -22,6 +22,8 @@ class Cat:
         self.vec = 0
         self.img_mario = img_id
         self.speed = speed
+        self.a_pressed = False
+        self.d_pressed = False
 
     def update(self, x, y):
         """
@@ -83,18 +85,26 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        # ====== ctrl Cat ======
+# ====== ctrl Cat ======
         if pyxel.btnp(pyxel.KEY_A):
+            self.player.a_pressed = True
+        if pyxel.btnp(pyxel.KEY_D):
+            self.player.d_pressed = True
+
+        if self.player.a_pressed:
             self.player.vec = 1
             self.player.update(self.player.pos.x -
                                self.player.speed, self.player.pos.y)
             if self.player.pos.x < 0:
                 self.player.update(0, self.player.pos.y)
-        elif pyxel.btnp(pyxel.KEY_D):
+            self.player.a_pressed = False
+        elif self.player.d_pressed:
             self.player.vec = 0
-            self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)
+            self.player.update(self.player.pos.x +
+                               self.player.speed, self.player.pos.y)
             if self.player.pos.x + mario_W > WINDOW_W:
                 self.player.update(WINDOW_W - mario_W, self.player.pos.y)
+            self.player.d_pressed = False
 
         # ====== crtl Map ======
         if pyxel.frame_count % INGAME_COUNT == 0:
@@ -105,7 +115,6 @@ class App:
                     map.update(map.pos.x, map.pos.y - MAP_H * 2 + map.speed)
 
         # ====== ctrl Obstacle ======
-
         if pyxel.frame_count % INGAME_COUNT == 0:
             index = int(pyxel.frame_count /
                         INGAME_COUNT) % len(self.obstacle_lists)
@@ -120,23 +129,17 @@ class App:
         # ====== draw Map ======
         for map in self.maps:
             pyxel.bltm(map.pos.x, map.pos.y, map.tilemap, 0, 0, MAP_W, MAP_H, 13)
-        # ====== draw Cat ======
-        if pyxel.btnp(pyxel.KEY_A):
-            self.player.vec = 1
 
         # ====== draw Cat ======
-        elif pyxel.btnp(pyxel.KEY_D):
-            self.player.vec = 0
-
+        if self.player.vec == 1:
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
         else:
-            if self.player.vec == 1:
-                pyxel.blt(
-                    self.player.pos.x, self.player.pos.y,
-                    self.player.img_mario, 0, 24, -mario_W, mario_H, 0)
-            else:
-                pyxel.blt(
-                    self.player.pos.x, self.player.pos.y,
-                    self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+            pyxel.blt(
+                self.player.pos.x, self.player.pos.y,
+                self.player.img_mario, 0, 24, mario_W, mario_H, 0)
+
         # ====== draw Collision ======
         # デバッグ用に当たり判定可視化
         for i, obstacle in enumerate(self.collisions[0].obstacle_list):
