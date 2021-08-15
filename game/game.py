@@ -316,13 +316,13 @@ class App:
                 )
 
             # ====== draw Collision ======
-            # デバッグ用に当たり判定可視化
-            # for i, obstacle in enumerate(self.collisions[0].obstacle_list):
-            #     if obstacle:
-            #         pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
-            # for i, obstacle in enumerate(self.collisions[1].obstacle_list):
-            #     if obstacle:
-            #         pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
+            if self.debug_mode:
+                for i, obstacle in enumerate(self.collisions[0].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
+                for i, obstacle in enumerate(self.collisions[1].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
 
             # ====== draw Enemy ======
 
