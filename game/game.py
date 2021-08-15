@@ -285,7 +285,7 @@ class App:
             if self.player.life < 1:
                 self.playing_flag = 0
                 self.game_over_flag = 1
-
+           
     def damage(self):
         if not self.player.is_invincible:
             self.player.is_invincible = True
@@ -294,6 +294,8 @@ class App:
         else:
             if pyxel.frame_count - self.player.inv_start_frame > 60:
                 self.player.is_invincible = False
+
+
 
     def draw(self):
         pyxel.cls(0)
@@ -351,6 +353,7 @@ class App:
 
             if 0 < pyxel.frame_count - self.start_count < 90:
                 if 0 < pyxel.frame_count - self.start_count < 30:
+
                     pyxel.text(55, 135, "3", 8)
                 if 30 < pyxel.frame_count - self.start_count < 60:
                     pyxel.text(55, 135, "2", 8)
@@ -362,6 +365,7 @@ class App:
             pyxel.text(37, 75, "GAME OVER", 8) 
             pyxel.text(25, 105, "Your time: " + str(self.timer).zfill(4), 10)
 
+        
 
 if __name__ == "__main__":
 
