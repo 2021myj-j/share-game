@@ -309,6 +309,7 @@ class App:
             self.player.is_invincible = True
             self.player.inv_start_frame = pyxel.frame_count
             self.player.life -= 1
+            pyxel.play(0,0,loop = False)
         else:
             if pyxel.frame_count - self.player.inv_start_frame > 60:
                 self.player.is_invincible = False
