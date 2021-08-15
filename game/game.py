@@ -20,7 +20,7 @@ class Vec2:
 
 
 class Player:
-    def __init__(self, img_id, speed, life=3):
+    def __init__(self, img_id, speed, life=16):
 
         self.pos = Vec2(48, 176)
         self.vec = 0
@@ -202,8 +202,9 @@ class App:
 
             for enemy in self.Enemies:
                 enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-                if enemy.pos.y >= WINDOW_H - ENEMY_H:
-                    enemy.pos.y = enemy.default_y - 256
+                if enemy.pos.y >= WINDOW_H:
+                    enemy.pos.y = enemy.default_y - randint(150, 300)
+                    enemy.pos.x = randint(0, WINDOW_W - ENEMY_W)
 
             self.enemy2.update(
                 self.enemy2.pos.x + self.enemy2.x_speed,
@@ -214,26 +215,7 @@ class App:
                 self.enemy2.x_speed = -self.enemy2.x_speed
 
             if self.enemy2.pos.y >= WINDOW_H:
-                self.enemy2.pos.y = self.enemy2.default_y - 200
-
-            # ====== ctrl Enemy ======
-
-            for enemy in self.Enemies:
-                enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-                if enemy.pos.y >= WINDOW_H - ENEMY_H:
-
-                    enemy.pos.y = enemy.default_y - randint(100, 300)
-
-            self.enemy2.update(
-                self.enemy2.pos.x + self.enemy2.x_speed,
-                self.enemy2.pos.y + self.enemy2.y_speed
-            )
-
-            if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
-                self.enemy2.x_speed = -self.enemy2.x_speed
-
-            if self.enemy2.pos.y >= WINDOW_H:
-                self.enemy2.pos.y = self.enemy2.default_y - randint(200, 500)
+                self.enemy2.pos.y = self.enemy2.default_y - randint(350, 650)
 
             # ====== Enemy Collision ======
             enemy_count = len(self.Enemies)
@@ -336,13 +318,13 @@ class App:
                 )
 
             # ====== draw Collision ======
-            # デバッグ用に当たり判定可視化
-            for i, obstacle in enumerate(self.collisions[0].obstacle_list):
-                if obstacle:
-                    pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
-            for i, obstacle in enumerate(self.collisions[1].obstacle_list):
-                if obstacle:
-                    pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
+            if self.debug_mode:
+                for i, obstacle in enumerate(self.collisions[0].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
+                for i, obstacle in enumerate(self.collisions[1].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
 
             # ====== draw Enemy ======
 
@@ -357,12 +339,12 @@ class App:
                 ENEMY_W, ENEMY_H, 7
             )
 
-            pyxel.rect(8, 8, 60, 16, 0)
 
-            pyxel.text(13, 14, "LIFE: " + str(self.player.life), 7)
+            pyxel.rect(8, 4, 96, 16, 0)
 
-            if self.player.life < 1:
-                self.game_over()
+            pyxel.text(13, 10, "LIFE: " + str(self.player.life), 7)
+
+            pyxel.text(60, 10, "TIME: " + str(self.timer).zfill(4), 7)
 
         if self.start_flag == 1:
             pyxel.cls(0)
@@ -379,9 +361,9 @@ class App:
 
         if self.game_over_flag == 1:
             pyxel.cls(0)
-            pyxel.text(37, 50, "GAME OVER", 8)        
-            pyxel.text(30, 100, "Your time : " + str(self.timer), 10)
-            
+
+            pyxel.text(37, 50, "GAME OVER", 8) 
+            pyxel.text(25, 100, "Your time: " + str(self.timer).zfill(4), 10)
 
         
 
