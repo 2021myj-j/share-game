@@ -10,7 +10,7 @@ MAP_H = 2048
 MAP_W = 112
 ENEMY_H = 8
 ENEMY_W = 8
-INGAME_COUNT = 15
+INGAME_COUNT = 45
 
 
 class Vec2:
@@ -113,14 +113,14 @@ class App:
         else:
             self.player = Player(self.PLAYER_IMG_ID, mario_W)
         self.Enemies = [
-            Enemy_kuri(self.PLAYER_IMG_ID, 0.8, randint(0, 70), randint(-150, -50)),
-            Enemy_kuri(self.PLAYER_IMG_ID, 0.9, randint(10, 80), randint(-350, -100)),
-            Enemy_kuri(self.PLAYER_IMG_ID, 1, randint(20, 90), randint(-600, -300)),
-            Enemy_kuri(self.PLAYER_IMG_ID, 1.1, randint(30, 100), randint(-700, -500))
+            Enemy_kuri(self.PLAYER_IMG_ID, 0.4, randint(0, 70), randint(-150, -50)),
+            Enemy_kuri(self.PLAYER_IMG_ID, 0.5, randint(10, 80), randint(-350, -100)),
+            Enemy_kuri(self.PLAYER_IMG_ID, 0.6, randint(20, 90), randint(-600, -300)),
+            Enemy_kuri(self.PLAYER_IMG_ID, 0.7, randint(30, 100), randint(-700, -500))
         ]
 
         self.enemy2 = Enemy_koura(
-            self.PLAYER_IMG_ID, 1.2, randint(0, 100), randint(-1000, -500)
+            self.PLAYER_IMG_ID, 0.8, randint(0, 100), randint(-1000, -500)
         )
         self.maps = [
             Map(self.TILEMAP_ID, -MAP_H + WINDOW_H),
@@ -145,10 +145,9 @@ class App:
         if self.start_flag == 1:
 
             if pyxel.btnp(pyxel.KEY_Y):
-
                 self.player.y_pressed = True
 
-            if self.player.y_pressed:
+            if self.player.y_pressed and not 0 <= pyxel.frame_count - self.start_count <= 90:
                 self.count_amari = True
                 self.player.y_pressed = False
 
@@ -168,6 +167,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if self.playing_flag == 1:
+            self.player.y_pressed =False
 
             if pyxel.frame_count % 30 == 0:
                 self.timer += 1
@@ -346,21 +346,21 @@ class App:
 
         if self.start_flag == 1:
             pyxel.cls(0)
-            pyxel.text(35, 50, "Share Game!", pyxel.frame_count % 16)
-            pyxel.text(35, 80, "Game Start", 8)
+            pyxel.text(35, 75, "Share Game!", pyxel.frame_count % 16)
+            pyxel.text(16, 105, 'Press Y Key to Start', 8)
 
             if 0 < pyxel.frame_count - self.start_count < 90:
                 if 0 < pyxel.frame_count - self.start_count < 30:
-                    pyxel.text(55, 120, "3", 8)
+                    pyxel.text(55, 135, "3", 8)
                 if 30 < pyxel.frame_count - self.start_count < 60:
-                    pyxel.text(55, 120, "2", 8)
+                    pyxel.text(55, 135, "2", 8)
                 if 60 < pyxel.frame_count - self.start_count < 90:
-                    pyxel.text(55, 120, "1", 8)
+                    pyxel.text(55, 135, "1", 8)
 
         if self.game_over_flag == 1:
             pyxel.cls(0)
-            pyxel.text(37, 50, "GAME OVER", 8) 
-            pyxel.text(25, 100, "Your time: " + str(self.timer).zfill(4), 10)
+            pyxel.text(37, 75, "GAME OVER", 8) 
+            pyxel.text(25, 105, "Your time: " + str(self.timer).zfill(4), 10)
 
 
 if __name__ == "__main__":
