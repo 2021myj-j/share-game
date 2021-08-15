@@ -20,7 +20,7 @@ class Vec2:
 
 
 class Player:
-    def __init__(self, img_id, speed, life=3):
+    def __init__(self, img_id, speed, life=16):
 
         self.pos = Vec2(48, 176)
         self.vec = 0
@@ -316,13 +316,13 @@ class App:
                 )
 
             # ====== draw Collision ======
-            # デバッグ用に当たり判定可視化
-            for i, obstacle in enumerate(self.collisions[0].obstacle_list):
-                if obstacle:
-                    pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
-            for i, obstacle in enumerate(self.collisions[1].obstacle_list):
-                if obstacle:
-                    pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
+            if self.debug_mode:
+                for i, obstacle in enumerate(self.collisions[0].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 32, 8, 8, 8)
+                for i, obstacle in enumerate(self.collisions[1].obstacle_list):
+                    if obstacle:
+                        pyxel.rect(i * 8, WINDOW_H - 24, 8, 8, 8)
 
             # ====== draw Enemy ======
 
@@ -337,12 +337,12 @@ class App:
                 ENEMY_W, ENEMY_H, 7
             )
 
-            pyxel.rect(8, 8, 60, 16, 0)
 
-            pyxel.text(13, 14, "LIFE: " + str(self.player.life), 7)
+            pyxel.rect(8, 4, 96, 16, 0)
 
-            if self.player.life < 1:
-                self.game_over()
+            pyxel.text(13, 10, "LIFE: " + str(self.player.life), 7)
+
+            pyxel.text(60, 10, "TIME: " + str(self.timer).zfill(4), 7)
 
         if self.start_flag == 1:
             pyxel.cls(0)
@@ -359,8 +359,8 @@ class App:
 
         if self.game_over_flag == 1:
             pyxel.cls(0)
-            pyxel.text(37, 50, "GAME OVER", 8)        
-            pyxel.text(30, 100, "Your time : " + str(self.timer), 10)
+            pyxel.text(37, 50, "GAME OVER", 8) 
+            pyxel.text(25, 100, "Your time: " + str(self.timer).zfill(4), 10)
 
 
 if __name__ == "__main__":
