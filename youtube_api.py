@@ -97,8 +97,9 @@ class YoutubeLiveChat():
 
         return res
 
-    def get_next_chat_message(self, part='id,snippet,authorDetails'):
-
+    def get_next_chat_message(self, nextPageToken=None, part='id,snippet,authorDetails'):
+        if not self.page_token:
+            self.page_token = nextPageToken
         row_data = self.get_chat_message_row_data(pageToken=self.page_token, part=part)
 
         res = self.format_row_yotube_data(row_data)

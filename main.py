@@ -48,16 +48,34 @@ class App(App):
 
         if not next_chat_message or (len(next_chat_message["comments"]) == 0):
             if next_chat_message:
-                print(next_chat_message)
+                print("---empty!---")
             return
+
+        is_y_pressed = False
+        if self.chat_to_command.data_set_to_num_of_command(next_chat_message)["y"] > 0:
+            is_y_pressed = True
+
+        if is_y_pressed:
+            self.command_list.append(self.chat_to_command.str_to_command("y"))
+
+        num_of_command_list = self.chat_to_command.data_to_num_of_command(next_chat_message)  # yapf: disable
+
+        for i in num_of_command_list:
+
+            if i["vec2"] > 0:
+                for j in range(i["vec2"]):
+                    self.command_list.append(self.chat_to_command.str_to_command("a"))
+            elif i["vec2"] < 0:
+                for j in range(-i["vec2"]):
+                    self.command_list.append(self.chat_to_command.str_to_command("d"))
 
         for i in next_chat_message["comments"]:
             display_message = i["display_message"]
             print(display_message)
 
-            first_valid_command = self.chat_to_command.first_valid_command_str_to_command(display_message)   # yapf: disable
-            if first_valid_command:
-                self.command_list.append(first_valid_command)
+        #     first_valid_command = self.chat_to_command.first_valid_command_str_to_command(display_message)   # yapf: disable
+        #     if first_valid_command:
+        #         self.command_list.append(first_valid_command)
 
 
 if __name__ == "__main__":

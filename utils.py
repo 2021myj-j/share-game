@@ -3,6 +3,7 @@ from functools import wraps
 from typing import Optional
 from youtube_api import YoutubeLiveChat
 import confing
+import time
 
 
 def add_operation(before: list = [], after: list = []):
@@ -128,22 +129,47 @@ class ChatToCommand():
         else:
             return False
 
-    def data_to_valid_command_srt(self, data):
+    def data_to_num_of_command(self, data):
         command_srt_list = []
         for i in data["comments"]:
             display_message = i["display_message"]
             command_srt_list.append(
-                "a" * self.count_a(display_message) +
-                "d" * self.count_d(display_message) +
-                "y" * self.count_y(display_message)
-            )  # yapf: disable
+                {
+                    "a": self.count_a(display_message),
+                    "d": self.count_d(display_message),
+                    "y": self.count_y(display_message),
+                    "vec2": self.count_a(display_message) - self.count_d(display_message)
+                }
+            )
 
         return command_srt_list
 
-    def get_command_list(self, fps, num_of_msg, data):
+    def data_set_to_num_of_command(self, data):
+        count_a, count_d, count_y = 0, 0, 0
+        for i in data["comments"]:
+            display_message = i["display_message"]
+            count_a += self.count_a(display_message)
+            count_d += self.count_d(display_message)
+            count_y += self.count_y(display_message)
 
-        if num_of_msg == fps:
-            pass
+        return {
+            "a": count_a,
+            "d": count_d,
+            "y": count_y,
+        }
+
+    def get_command_list(self, fps, data):
+        pass
+        # is_y_pressed = False
+
+        # if self.data_set_to_num_of_command(data)["y"] > 0:
+        #     is_y_pressed = True
+
+        # num_of_command_list = self.data_to_num_of_command(data)
+
+        # if is_y_pressed
+        # if len(data["comments"]) == fps:
+        #     pass
 
 
 if __name__ == '__main__':
@@ -162,10 +188,21 @@ if __name__ == '__main__':
     # count_ans.append(chat_to_command.first_valid_command_str_to_command(string))
     # count_ans.append(chat_to_command.first_valid_command_str_to_command(string2))
 
-    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
-    data = youtube_live_chat.get_next_chat_message()
-    chat_to_command.data_to_valid_command_srt(data)
-    print()
+    youtube_live_chat = YoutubeLiveChat(
+        confing.YOTUBER_URL, confing.YOTUBER_API_KEY, interval=5
+    )
+    while True:
+        data = youtube_live_chat.get_next_chat_message(
+            nextPageToken="GPuO1sP7sfICIITO1M77sfIC"
+        )
+        print(data["next_page_token"])
+        for i in data["comments"]:
+            display_message = i["display_message"]
+            print(display_message)
+
+        num_of_command = chat_to_command.data_to_num_of_command(data)
+        print(num_of_command)
+        time.sleep(10)
 
     # for i in count_ans:
     #     print(i)
