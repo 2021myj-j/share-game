@@ -45,7 +45,7 @@ def update_func(origin, before: list = [], after: list = []):
 
 
 class ChatToCommand():
-    def __init__(self, fps) -> None:
+    def __init__(self, fps=30) -> None:
 
         self.valid_command_str = ("a", "A", "d", "D", "y", "Y")
 

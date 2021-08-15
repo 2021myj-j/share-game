@@ -19,7 +19,7 @@ class App(App):
         self.youtube_live_chat = YoutubeLiveChat(
             confing.YOTUBER_URL, confing.YOTUBER_API_KEY, interval=1
         )
-        self.chat_to_command = ChatToCommand(30)
+        self.chat_to_command = ChatToCommand()
         super().__init__(debug_mode)
 
     def update(self):
