@@ -202,8 +202,9 @@ class App:
 
             for enemy in self.Enemies:
                 enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-                if enemy.pos.y >= WINDOW_H - ENEMY_H:
-                    enemy.pos.y = enemy.default_y - 256
+                if enemy.pos.y >= WINDOW_H:
+                    enemy.pos.y = enemy.default_y - randint(150, 300)
+                    enemy.pos.x = randint(0, WINDOW_W - ENEMY_W)
 
             self.enemy2.update(
                 self.enemy2.pos.x + self.enemy2.x_speed,
@@ -214,26 +215,7 @@ class App:
                 self.enemy2.x_speed = -self.enemy2.x_speed
 
             if self.enemy2.pos.y >= WINDOW_H:
-                self.enemy2.pos.y = self.enemy2.default_y - 200
-
-            # ====== ctrl Enemy ======
-
-            for enemy in self.Enemies:
-                enemy.update(enemy.pos.x, enemy.pos.y + enemy.speed)
-                if enemy.pos.y >= WINDOW_H - ENEMY_H:
-
-                    enemy.pos.y = enemy.default_y - randint(100, 300)
-
-            self.enemy2.update(
-                self.enemy2.pos.x + self.enemy2.x_speed,
-                self.enemy2.pos.y + self.enemy2.y_speed
-            )
-
-            if self.enemy2.pos.x >= WINDOW_W - ENEMY_W or self.enemy2.pos.x <= 0:
-                self.enemy2.x_speed = -self.enemy2.x_speed
-
-            if self.enemy2.pos.y >= WINDOW_H:
-                self.enemy2.pos.y = self.enemy2.default_y - randint(200, 500)
+                self.enemy2.pos.y = self.enemy2.default_y - randint(350, 650)
 
             # ====== Enemy Collision ======
             enemy_count = len(self.Enemies)
