@@ -1,6 +1,8 @@
 from copy import deepcopy
 from functools import wraps
 from typing import Optional
+from youtube_api import YoutubeLiveChat
+import confing
 
 
 def add_operation(before: list = [], after: list = []):
@@ -148,17 +150,22 @@ if __name__ == '__main__':
     string = "abcdDDefgaaAAayYya"
     string2 = "54564"
     pattern = "a"
-    chat_to_command = ChatToCommand(30)
+    chat_to_command = ChatToCommand()
 
-    count_ans = []
-    count_ans.append(chat_to_command.count_pattern(string, pattern))
-    count_ans.append(chat_to_command.count_a(string))
-    count_ans.append(chat_to_command.count_a(string, True))
-    count_ans.append(chat_to_command.count_d(string))
-    count_ans.append(chat_to_command.count_y(string))
-    count_ans.append(chat_to_command.count_y(string2, True))
-    count_ans.append(chat_to_command.first_valid_command_str_to_command(string))
-    count_ans.append(chat_to_command.first_valid_command_str_to_command(string2))
+    # count_ans = []
+    # count_ans.append(chat_to_command.count_pattern(string, pattern))
+    # count_ans.append(chat_to_command.count_a(string))
+    # count_ans.append(chat_to_command.count_a(string, True))
+    # count_ans.append(chat_to_command.count_d(string))
+    # count_ans.append(chat_to_command.count_y(string))
+    # count_ans.append(chat_to_command.count_y(string2, True))
+    # count_ans.append(chat_to_command.first_valid_command_str_to_command(string))
+    # count_ans.append(chat_to_command.first_valid_command_str_to_command(string2))
 
-    for i in count_ans:
-        print(i)
+    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
+    data = youtube_live_chat.get_next_chat_message()
+    chat_to_command.data_to_valid_command_srt(data)
+    print()
+
+    # for i in count_ans:
+    #     print(i)
