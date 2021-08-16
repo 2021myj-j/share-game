@@ -1,6 +1,5 @@
 import requests
 import datetime
-import time
 
 import confing
 
@@ -11,14 +10,19 @@ class YoutubeLiveChat():
             Unit of interval: second
         """
         self.youtuber_api_key = youtuber_api_key
-        self.chat_id = self._get_chat_id(youtuber_url)
-        self.page_token = None
-        self.interval = interval
-        self.previous_token_time = datetime.datetime.now() - datetime.timedelta(
-            seconds=self.interval + 1
-        )
+        self.chat_id = self.get_chat_id(youtuber_url)
+        if not self.chat_id:
 
-    def _get_chat_id(self, yt_url):
+            class NoneError(Exception):
+                def __str__(self) -> str:
+                    return "This value can NOT be None!"
+
+            raise NoneError
+        self.interval = interval
+        self.previous_token_time = datetime.datetime.now() - datetime.timedelta(seconds=self.interval + 1)  # yapf: disable
+        self.page_token = self.get_chat_message_next_page_token()
+
+    def get_chat_id(self, yt_url: str):
         '''
         from qiita @iroiro_bot
         https://qiita.com/iroiro_bot/items/ad0f3901a2336fe48e8f
@@ -51,7 +55,7 @@ class YoutubeLiveChat():
 
         return chat_id
 
-    def get_chat_message_row_data(self, pageToken=None, part='id,snippet,authorDetails'):
+    def get_chat_message_row_data(self, page_token=None, part='id,snippet,authorDetails'):
         # inputの方がサガサイでやりやすそう
         interval = datetime.datetime.now() - self.previous_token_time
         if interval.seconds < self.interval:
@@ -64,13 +68,26 @@ class YoutubeLiveChat():
             'part': 'id,snippet,authorDetails',
         }
 
-        if type(pageToken) == str:
-            params['pageToken'] = pageToken
+        if page_token:
+            params['pageToken'] = page_token
 
         self.previous_token_time = datetime.datetime.now()
-        return requests.get(url, params=params).json()
+        res = requests.get(url, params=params).json()
 
-    def format_row_yotube_data(self, data):
+        if "error" in res:
+            return None
+
+        return res
+
+    def get_chat_message_next_page_token(self):
+        chat_message_row_data = self.get_chat_message_row_data()
+
+        if not chat_message_row_data:
+            return None
+
+        return chat_message_row_data["nextPageToken"]
+
+    def format_chat_message_row_data(self, data):
         if not data:
             return None
 
@@ -80,6 +97,7 @@ class YoutubeLiveChat():
             for item in data['items']:
                 channelId = item['snippet']['authorChannelId']
                 msg = item['snippet']['displayMessage']
+                published_at = item['snippet']["publishedAt"]
                 usr = item['authorDetails']['displayName']
 
                 # 要求されたもの
@@ -87,6 +105,7 @@ class YoutubeLiveChat():
                     "author_channel_id": channelId,
                     "author_name": usr,
                     "display_message": msg,
+                    "published_at": published_at
                 }
                 comments.append(comment)
 
@@ -97,17 +116,24 @@ class YoutubeLiveChat():
 
         return res
 
-    def get_next_chat_message(self, nextPageToken=None, part='id,snippet,authorDetails'):
+    # yapf: disable
+    def get_formatted_chat_message_data(self, page_token=None, part='id,snippet,authorDetails'):
+        chat_message_row_data = self.get_chat_message_row_data(page_token=page_token, part=part)
+        formatted_chat_message_data = self.format_chat_message_row_data(chat_message_row_data)
+        return formatted_chat_message_data
+    # yapf: enable
+
+    def get_next_chat_message(self, part='id,snippet,authorDetails'):
+
         if not self.page_token:
-            self.page_token = nextPageToken
-        row_data = self.get_chat_message_row_data(pageToken=self.page_token, part=part)
+            self.page_token = self.get_chat_message_next_page_token()
 
-        res = self.format_row_yotube_data(row_data)
+        next_chat_message = self.get_formatted_chat_message_data(page_token=self.page_token, part=part)  # yapf: disable
+        if not next_chat_message:
+            return
 
-        if res:
-            self.page_token = res["next_page_token"]
-
-        return res
+        self.page_token = next_chat_message["next_page_token"]
+        return next_chat_message
 
 
 if __name__ == '__main__':
@@ -128,8 +154,11 @@ if __name__ == '__main__':
 
     # data = requests.get(url, params=params).json()
     # print(data)
+    import time
+
     print("\n\n\n\n\n")
     youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
+    # print(youtube_live_chat.get_chat_id(confing.YOTUBER_URL))
     print(youtube_live_chat.get_next_chat_message())
     time.sleep(5)
     print(youtube_live_chat.get_next_chat_message())
