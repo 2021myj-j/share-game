@@ -1,9 +1,7 @@
 from copy import deepcopy
 from functools import wraps
 from typing import Optional
-from youtube_api import YoutubeLiveChat
-import confing
-import time
+import os
 
 
 def add_operation(before: list = [], after: list = []):
@@ -45,6 +43,21 @@ def update_func(origin, before: list = [], after: list = []):
         origin(*args, **kwargs)
 
     return new_func
+
+
+def find_files(files_path: str, file_name: str):
+    file_list = []
+    files = os.listdir(files_path)
+
+    for file in files:
+        file_path = os.path.join(files_path, file)
+        if os.path.isdir(file_path):
+            inner_file_list = find_files(file_path, file_name)
+            file_list = file_list + inner_file_list
+        elif os.path.isfile(file_path) and file_name in file_path:
+            file_list.append(file_path)
+
+    return file_list
 
 
 class ChatToCommand():
@@ -173,6 +186,9 @@ class ChatToCommand():
 
 
 if __name__ == '__main__':
+    from youtube_api import YoutubeLiveChat
+    import confing
+    import time
     string = "abcdDDefgaaAAayYya"
     string2 = "54564"
     pattern = "a"
