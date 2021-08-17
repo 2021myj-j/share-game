@@ -1,8 +1,6 @@
 import requests
 import datetime
 
-import confing
-
 
 class YoutubeLiveChat():
     def __init__(self, youtuber_url, youtuber_api_key, interval=10) -> None:
@@ -61,6 +59,7 @@ class YoutubeLiveChat():
         if interval.seconds < self.interval:
             return None
 
+        # print(self.interval)
         url = 'https://www.googleapis.com/youtube/v3/liveChat/messages'
         params = {
             'key': self.youtuber_api_key,
@@ -74,6 +73,7 @@ class YoutubeLiveChat():
         self.previous_token_time = datetime.datetime.now()
         res = requests.get(url, params=params).json()
 
+        # print(res)
         if "error" in res:
             return None
 
@@ -137,6 +137,19 @@ class YoutubeLiveChat():
 
 
 if __name__ == '__main__':
+
+    import time
+    import confing
+
+    print("\n\n\n\n\n")
+    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
+    # print(youtube_live_chat.get_chat_id(confing.YOTUBER_URL))
+    print(youtube_live_chat.get_next_chat_message())
+    time.sleep(5)
+    print(youtube_live_chat.get_next_chat_message())
+    time.sleep(6)
+    print(youtube_live_chat.get_next_chat_message())
+
     # yt_url = input('Input YouTube URL > ')
     # chat_id = get_chat_id(yt_url)
     # chat_id = get_chat_id(confing.YOTUBER_URL)
@@ -154,16 +167,6 @@ if __name__ == '__main__':
 
     # data = requests.get(url, params=params).json()
     # print(data)
-    import time
-
-    print("\n\n\n\n\n")
-    youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
-    # print(youtube_live_chat.get_chat_id(confing.YOTUBER_URL))
-    print(youtube_live_chat.get_next_chat_message())
-    time.sleep(5)
-    print(youtube_live_chat.get_next_chat_message())
-    time.sleep(6)
-    print(youtube_live_chat.get_next_chat_message())
     """
     chat_id = get_chat_id(confing.YOTUBER_URL)
     data = get_chat_message(confing.YOTUBER_API_KEY, chat_id)
