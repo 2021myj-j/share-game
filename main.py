@@ -80,5 +80,4 @@ class App(App):
 
 if __name__ == "__main__":
     # youtube_live_chat = YoutubeLiveChat(confing.YOTUBER_URL, confing.YOTUBER_API_KEY)
-    print("\n\n\n")
-    App(debug_mode=True)
+    App()
