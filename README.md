@@ -43,6 +43,6 @@ YOTUBER_API_KEY: ”Your YouTube API Key“
 ```
 
 ### 実行
-`` を実行すると、ゲームが始まる。
+`main.py` を実行すると、ゲームが始まる。
 
 main.pyの最後に一行 `App()` を `App(debug_mode=True)`に変更すると、debug modeでゲームを起動することができる。
