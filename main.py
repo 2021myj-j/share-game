@@ -1,9 +1,9 @@
 from typing import List, Tuple, Optional
 
 from game.game import App
-import confing
-from youtube_api import YoutubeLiveChat
-from utils import ChatToCommand
+from core import confing
+from core.youtube_api import YoutubeLiveChat
+from core.utils import ChatToCommand
 
 
 class App(App):
