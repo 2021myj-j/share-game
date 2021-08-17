@@ -30,7 +30,7 @@ share-gameはYouTube Studioのコメント欄からコメントを抽出し、�
 
 2. 仮想環境で以下のコードで必要なモジュールをダウンロードする。
 ```shell
-$ pip install -r requirements.txt
+$ pip install -r share-game/requirements.txt
 ```
 
 3. [YouTube APIキーの取得 (2020/03/25時点)](https://qiita.com/iroiro_bot/items/1016a6a439dfb8d21eca)

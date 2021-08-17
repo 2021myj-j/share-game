@@ -1,4 +1,6 @@
 import yaml
+import os
+from core.utils import find_files
 
 
 class ReadConfing():
@@ -9,6 +11,40 @@ class ReadConfing():
         return self.data[ver_name]
 
 
+def find_confing_path(confing_paths: list):
+    if confing_paths:
+        if len(confing_paths) > 1:
+            for i in confing_paths:
+                if "share" in i and "game" in i:
+                    return i
+        else:
+            return confing_paths[0]
+
+
+confing_paths = find_files(os.path.abspath(".."), "confing.yaml")
+if not confing_paths:
+    confing_paths = find_files(os.path.abspath(".."), "key.yaml")
+
+confing_path = find_confing_path(confing_paths)
+if not confing_path:
+
+    class MissingKeyOrConfingError(Exception):
+        def __str__(self) -> str:
+            return "Missing key file or confing file"
+
+    raise MissingKeyOrConfingError
+
+readConfing = ReadConfing(confing_path)
+YOTUBER_URL = readConfing.getconfing("YOTUBER_URL")
+YOTUBER_API_KEY = readConfing.getconfing("YOTUBER_API_KEY")
+
+if __name__ == "__main__":
+    print(confing_path)
+    print(YOTUBER_URL)
+    print(YOTUBER_API_KEY)
+
+# 旧find_confing_path()関数
+"""
 def find_confing_path():
     import os
 
@@ -45,14 +81,4 @@ def find_confing_path():
                 return "Missing key file or confing file"
 
         raise MissingKeyOrConfingError
-
-
-confing_path = find_confing_path()
-readConfing = ReadConfing(confing_path)
-YOTUBER_URL = readConfing.getconfing("YOTUBER_URL")
-YOTUBER_API_KEY = readConfing.getconfing("YOTUBER_API_KEY")
-
-if __name__ == "__main__":
-    print(confing_path)
-    print(YOTUBER_URL)
-    print(YOTUBER_API_KEY)
+"""

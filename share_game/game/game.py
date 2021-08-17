@@ -142,6 +142,9 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        """
+        プレイヤーとマップを動かす
+        """
         if self.start_flag == 1:
 
             if pyxel.btnp(pyxel.KEY_Y):
@@ -151,7 +154,7 @@ class App:
                 self.count_amari = True
                 self.player.y_pressed = False
 
-            if self.count_amari == True:
+            if self.count_amari:
                 if pyxel.frame_count % INGAME_COUNT == 0:
                     self.start_count = pyxel.frame_count
                     self.count_amari = False
@@ -161,13 +164,10 @@ class App:
                 self.start_flag = 0
                 self.playing_flag = 1
 
-        """
-        プレイヤーとマップを動かす
-        """
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if self.playing_flag == 1:
-            self.player.y_pressed =False
+            self.player.y_pressed = False
 
             if pyxel.frame_count % 30 == 0:
                 self.timer += 1
@@ -180,20 +180,14 @@ class App:
 
             if self.player.a_pressed:
                 self.player.vec = 1
-                self.player.update(
-                    self.player.pos.x - self.player.speed,
-                    self.player.pos.y
-                )   # yapf: disable
+                self.player.update(self.player.pos.x - self.player.speed, self.player.pos.y)  # yapf: disable
                 if self.player.pos.x < 0:
                     self.player.update(0, self.player.pos.y)
                 self.player.a_pressed = False
+
             elif self.player.d_pressed:
                 self.player.vec = 0
-
-                self.player.update(
-                    self.player.pos.x + self.player.speed, self.player.pos.y
-                )
-
+                self.player.update(self.player.pos.x + self.player.speed, self.player.pos.y)  # yapf: disable
                 if self.player.pos.x + mario_W > WINDOW_W:
                     self.player.update(WINDOW_W - mario_W, self.player.pos.y)
                 self.player.d_pressed = False
@@ -222,42 +216,52 @@ class App:
             for i in range(enemy_count):
                 # 当たり判定(クリボーとマリオ)
 
-                if ((self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
-                    and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                    and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
-                    and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) 
-                    or (self.player.pos.x < self.Enemies[i].pos.x)
-                    and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
-                    and (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H)
-                    and (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H)
-                    or (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W)
-                    and (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                    and (self.player.pos.y < self.Enemies[i].pos.y)
-                    and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)
-                    or (self.player.pos.x < self.Enemies[i].pos.x)
-                    and (self.Enemies[i].pos.x < self.player.pos.x + mario_W)
-                    and (self.player.pos.y < self.Enemies[i].pos.y)
-                    and (self.Enemies[i].pos.y < self.player.pos.y + mario_H)):
+                if (
+                    (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W) and
+                    (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W) and
+                    (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H) and
+                    (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) or
+
+                    (self.player.pos.x < self.Enemies[i].pos.x) and
+                    (self.Enemies[i].pos.x < self.player.pos.x + mario_W) and
+                    (self.player.pos.y < self.Enemies[i].pos.y + ENEMY_H) and
+                    (self.Enemies[i].pos.y + ENEMY_H < self.player.pos.y + mario_H) or
+
+                    (self.player.pos.x < self.Enemies[i].pos.x + ENEMY_W) and
+                    (self.Enemies[i].pos.x + ENEMY_W < self.player.pos.x + mario_W) and
+                    (self.player.pos.y < self.Enemies[i].pos.y) and
+                    (self.Enemies[i].pos.y < self.player.pos.y + mario_H) or
+
+                    (self.player.pos.x < self.Enemies[i].pos.x) and
+                    (self.Enemies[i].pos.x < self.player.pos.x + mario_W) and
+                    (self.player.pos.y < self.Enemies[i].pos.y) and
+                    (self.Enemies[i].pos.y < self.player.pos.y + mario_H)
+                ):    # yapf: disable コード自動フォーマットで書き換えされなくなる
 
                     self.damage()
 
             # 当たり判定(こうらとマリオ)
-            if ((self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
-                and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
-                and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) 
-                or (self.player.pos.x < self.enemy2.pos.x)
-                and (self.enemy2.pos.x < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.enemy2.pos.y + ENEMY_H)
-                and (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H)
-                or (self.player.pos.x < self.enemy2.pos.x + ENEMY_W)
-                and (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.enemy2.pos.y)
-                and (self.enemy2.pos.y < self.player.pos.y + mario_H)
-                or (self.player.pos.x < self.enemy2.pos.x)
-                and (self.enemy2.pos.x < self.player.pos.x + mario_W)
-                and (self.player.pos.y < self.enemy2.pos.y)
-                and (self.enemy2.pos.y < self.player.pos.y + mario_H)):
+            if (
+                (self.player.pos.x < self.enemy2.pos.x + ENEMY_W) and
+                (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W) and
+                (self.player.pos.y < self.enemy2.pos.y + ENEMY_H) and
+                (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) or
+
+                (self.player.pos.x < self.enemy2.pos.x) and
+                (self.enemy2.pos.x < self.player.pos.x + mario_W) and
+                (self.player.pos.y < self.enemy2.pos.y + ENEMY_H) and
+                (self.enemy2.pos.y + ENEMY_H < self.player.pos.y + mario_H) or
+
+                (self.player.pos.x < self.enemy2.pos.x + ENEMY_W) and
+                (self.enemy2.pos.x + ENEMY_W < self.player.pos.x + mario_W) and
+                (self.player.pos.y < self.enemy2.pos.y) and
+                (self.enemy2.pos.y < self.player.pos.y + mario_H) or
+
+                (self.player.pos.x < self.enemy2.pos.x) and
+                (self.enemy2.pos.x < self.player.pos.x + mario_W) and
+                (self.player.pos.y < self.enemy2.pos.y) and
+                (self.enemy2.pos.y < self.player.pos.y + mario_H)
+            ):  # yapf: disable コード自動フォーマットで書き換えされなくなる
 
                 self.damage()
 
@@ -285,18 +289,16 @@ class App:
             if self.player.life < 1:
                 self.playing_flag = 0
                 self.game_over_flag = 1
-           
+
     def damage(self):
         if not self.player.is_invincible:
             self.player.is_invincible = True
             self.player.inv_start_frame = pyxel.frame_count
             self.player.life -= 1
-            pyxel.play(0,0,loop = False)
+            pyxel.play(0, 0, loop=False)
         else:
             if pyxel.frame_count - self.player.inv_start_frame > 60:
                 self.player.is_invincible = False
-
-
 
     def draw(self):
         pyxel.cls(0)
@@ -309,14 +311,14 @@ class App:
             # ====== draw Player ======
             if self.player.vec == 1:
                 pyxel.blt(
-                    self.player.pos.x, self.player.pos.y, self.player.img_mario, 0, 24,
-                    -mario_W, mario_H, 0
-                )
+                    self.player.pos.x, self.player.pos.y, self.player.img_mario,
+                    0, 24, -mario_W, mario_H, 0
+                )  # yapf: disable
             else:
                 pyxel.blt(
-                    self.player.pos.x, self.player.pos.y, self.player.img_mario, 0, 24,
-                    mario_W, mario_H, 0
-                )
+                    self.player.pos.x, self.player.pos.y, self.player.img_mario,
+                    0, 24, mario_W, mario_H, 0
+                )  # yapf: disable
 
             # ====== draw Collision ======
             if self.debug_mode:
@@ -330,16 +332,15 @@ class App:
             # ====== draw Enemy ======
 
             for enemy in self.Enemies:
-
                 pyxel.blt(
-                    enemy.pos.x, enemy.pos.y, enemy.img_enemy, 16, 24, ENEMY_W, ENEMY_H, 7
-                )
+                    enemy.pos.x, enemy.pos.y, enemy.img_enemy,
+                    16, 24, ENEMY_W, ENEMY_H, 7
+                )  # yapf: disable コード自動フォーマットで書き換えされなくなる
 
             pyxel.blt(
-                self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy, 24, 32,
-                ENEMY_W, ENEMY_H, 7
-            )
-
+                self.enemy2.pos.x, self.enemy2.pos.y, self.enemy2.img_enemy,
+                24, 32, ENEMY_W, ENEMY_H, 7
+            )  # yapf: disable コード自動フォーマットで書き換えされなくなる
 
             pyxel.rect(8, 4, 96, 16, 0)
 
@@ -354,7 +355,6 @@ class App:
 
             if 0 < pyxel.frame_count - self.start_count < 90:
                 if 0 < pyxel.frame_count - self.start_count < 30:
-
                     pyxel.text(55, 135, "3", 8)
                 if 30 < pyxel.frame_count - self.start_count < 60:
                     pyxel.text(55, 135, "2", 8)
@@ -363,10 +363,9 @@ class App:
 
         if self.game_over_flag == 1:
             pyxel.cls(0)
-            pyxel.text(37, 75, "GAME OVER", 8) 
+            pyxel.text(37, 75, "GAME OVER", 8)
             pyxel.text(25, 105, "Your time: " + str(self.timer).zfill(4), 10)
 
-        
 
 if __name__ == "__main__":
 
