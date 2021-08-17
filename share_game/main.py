@@ -1,4 +1,5 @@
 from typing import List, Tuple, Optional
+import datetime
 
 from game.game import App
 from core import confing
@@ -44,11 +45,12 @@ class App(App):
             self.player.a_pressed, self.player.d_pressed, self.player.y_pressed = self.command_list.pop(0)  # yapf: disable
 
     def get_command(self):
+        interval = datetime.datetime.now() - self.youtube_live_chat.previous_token_time
         next_chat_message = self.youtube_live_chat.get_next_chat_message()
 
         if not next_chat_message or (len(next_chat_message["comments"]) == 0):
             if next_chat_message:
-                print("---empty!---")
+                print("---empty! %d s passed since last token---" % interval.seconds)
             return
 
         is_y_pressed = False
@@ -69,6 +71,7 @@ class App(App):
                 for j in range(-i["vec2"]):
                     self.command_list.append(self.chat_to_command.str_to_command("d"))
 
+        print("---message follows, %d s passed since last token---" % interval.seconds)
         for i in next_chat_message["comments"]:
             display_message = i["display_message"]
             print(display_message)
