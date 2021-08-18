@@ -10,7 +10,9 @@ The team members are the following four people:
 
 ## 概要
 share-gameはYouTube Studioのコメント欄からコメントを抽出し、抽出した結果によって動きを制御するゲームです。
-![20210819053730](https://raw.githubusercontent.com/KuroiCc/kuroi-image-host/main/images/20210819053730.png)
+
+![ゲーム画面](https://raw.githubusercontent.com/KuroiCc/kuroi-image-host/main/images/20210819053730.png)
+
 ###  - ゲームの内容
 
 キャラクターを左右に動かし、敵や障害物を避けるゲーム
