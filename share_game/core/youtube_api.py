@@ -70,13 +70,13 @@ class YoutubeLiveChat():
         if page_token:
             params['pageToken'] = page_token
 
+        self.previous_token_time = datetime.datetime.now()
         res = requests.get(url, params=params).json()
 
         # print(res)
         if "error" in res:
             return None
 
-        self.previous_token_time = datetime.datetime.now()
         return res
 
     def get_chat_message_next_page_token(self):
