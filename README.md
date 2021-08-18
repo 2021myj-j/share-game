@@ -3,14 +3,14 @@ This project is for the Hackathon Summer Camp 2021 organized by Myjlab of SSI AG
 
 The team members are the following four people:
 
-- @a8119056
-- @nkry-617
-- @zookam
-- @KuroiCc
+- [@a8119056](https://github.com/a8119056)
+- [@nkry-617](https://github.com/nkry-617)
+- [@zookam](https://github.com/zookam)
+- [@KuroiCc](https://github.com/KuroiCc)
 
 ## 概要
 share-gameはYouTube Studioのコメント欄からコメントを抽出し、抽出した結果によって動きを制御するゲームです。
-
+![20210819053730](https://raw.githubusercontent.com/KuroiCc/kuroi-image-host/main/images/20210819053730.png)
 ###  - ゲームの内容
 
 キャラクターを左右に動かし、敵や障害物を避けるゲーム
